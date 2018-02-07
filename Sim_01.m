@@ -129,7 +129,7 @@ for t=1:nRlz
       for k=1:nBoot 
           signflips = randi(2, [nSubj,1])*2-3;
           resid_bootstrap      = resid*spdiags(signflips, nSubj, nSubj);
-          resid_bootstrap      = reshape(resid, [dim nSubj]);
+          resid_bootstrap      = reshape(resid_bootstrap, [dim nSubj]);
           resid_field          = sum(resid_bootstrap, 3)/sqrt(nSubj); 
           
           snr_resid_bootstrap  = snr_resid*spdiags(signflips, nSubj, nSubj);
