@@ -155,8 +155,8 @@ for t=1:nRlz
     
     lower_contour_raw_80_boundary    = observed_mean(true_boundary) - supGa_raw_80*tau*observed_std(true_boundary);
     upper_contour_raw_80_boundary    = observed_mean(true_boundary) + supGa_raw_80*tau*observed_std(true_boundary);
-    mid_on_upper_raw_80_boundary     = thr >= upper_contour_raw_80_boundary;
-    lower_on_mid_raw_80_boundary     = lower_contour_raw_80_boundary >= thr;
+    mid_on_upper_raw_80_boundary     = thr > upper_contour_raw_80_boundary;
+    lower_on_mid_raw_80_boundary     = lower_contour_raw_80_boundary > thr;
     
     
     lower_contour_raw_90             = observed_mean >= thr - supGa_raw_90*tau*observed_std;
@@ -168,8 +168,8 @@ for t=1:nRlz
     
     lower_contour_raw_90_boundary    = observed_mean(true_boundary) - supGa_raw_90*tau*observed_std(true_boundary);
     upper_contour_raw_90_boundary    = observed_mean(true_boundary) + supGa_raw_90*tau*observed_std(true_boundary);
-    mid_on_upper_raw_90_boundary     = thr >= upper_contour_raw_90_boundary;
-    lower_on_mid_raw_90_boundary     = lower_contour_raw_90_boundary >= thr;
+    mid_on_upper_raw_90_boundary     = thr > upper_contour_raw_90_boundary;
+    lower_on_mid_raw_90_boundary     = lower_contour_raw_90_boundary > thr;
     
     lower_contour_raw_95             = observed_mean >= thr - supGa_raw_95*tau*observed_std;
     upper_contour_raw_95             = observed_mean >= thr + supGa_raw_95*tau*observed_std;
@@ -180,8 +180,8 @@ for t=1:nRlz
     
     lower_contour_raw_95_boundary    = observed_mean(true_boundary) - supGa_raw_95*tau*observed_std(true_boundary);
     upper_contour_raw_95_boundary    = observed_mean(true_boundary) + supGa_raw_95*tau*observed_std(true_boundary);
-    mid_on_upper_raw_95_boundary     = thr >= upper_contour_raw_95_boundary;
-    lower_on_mid_raw_95_boundary     = lower_contour_raw_95_boundary >= thr;
+    mid_on_upper_raw_95_boundary     = thr > upper_contour_raw_95_boundary;
+    lower_on_mid_raw_95_boundary     = lower_contour_raw_95_boundary > thr;
     
     %
     % Storing all variables of interest
