@@ -99,7 +99,6 @@ mean_std_store = zeros(nRlz, 1);
 tNoises_store = zeros([dim nSubj]);
 
 for t=1:nRlz
-    fprintf('.');
       for i=1:nSubj
 	    %
 	    % Generate random realizations of signal + noise
@@ -122,5 +121,6 @@ for t=1:nRlz
         
       end %========== Loop i (subjects)
       reshape_tNoises = reshape(tNoises_store, [prod(dim) nSubj]);
+      mean(std(reshape_tNoises(:,[1:nSubj])))
       mean_std_store(t, 1) = mean(std(reshape_tNoises(:,[1:nSubj])));
 end
