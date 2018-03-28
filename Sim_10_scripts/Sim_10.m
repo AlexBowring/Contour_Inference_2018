@@ -1,4 +1,4 @@
-function Sim_04(nSubj,SvNm,nRlz)
+function Sim_10(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
@@ -25,7 +25,7 @@ end
 % nRlz = 300;
 
 tau     = 1/sqrt(nSubj);
-nBoot   = 1000;
+nBoot   = 5000;
 dim     = [100 100]; 
 mag     = 3;
 smo     = 10;
@@ -84,6 +84,7 @@ Sig = repmat(linspace(1, 3), dim(2), 1);
 % Uncomment to look at the Signal
 %imagesc(Sig); axis image; colorbar
 AC = Sig >= thr;
+se = strel('arbitrary',sqrt(a.^2 + b.^2) <=1);
 
 % The boundary for Sig > 2, note that Sig = 2.02 in the 51st column
 true_boundary = zeros(dim);
@@ -122,6 +123,8 @@ for t=1:nRlz
       % Residuals
       resid = bsxfun(@minus,observed_data,observed_mean);
       resid = spdiags(1./reshape(observed_std, [prod(dim) 1]), 0,prod(dim),prod(dim))*reshape(resid,[prod(dim) nSubj]); 
+      
+      
       
       % Implementing the Multiplier Boostrap to obtain confidence intervals
       for k=1:nBoot 
