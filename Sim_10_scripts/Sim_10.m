@@ -75,6 +75,9 @@ upper_subset_mid_raw_95_store = zeros([nRlz dim]);
 mid_subset_lower_raw_95_store = zeros([nRlz dim]);
 
 supG_raw         = zeros(nBoot,1);
+supG_raw_ero     = zeros(nBoot,1);
+supG_raw_dil     = zeros(nBoot,1);
+supG_raw_ero_dil = zeros(nBoot,1);
 
 raw_field_boundary_store        = zeros(dim(2), nBoot);
 
@@ -84,6 +87,9 @@ Sig = repmat(linspace(1, 3), dim(2), 1);
 % Uncomment to look at the Signal
 %imagesc(Sig); axis image; colorbar
 AC = Sig >= thr;
+
+% Variables for computing the estimated boundary
+[a,b] = ndgrid(-1:1);
 se = strel('arbitrary',sqrt(a.^2 + b.^2) <=1);
 
 % The boundary for Sig > 2, note that Sig = 2.02 in the 51st column
@@ -118,14 +124,21 @@ for t=1:nRlz
 
       observed_std = reshape(...
          biasmystd(reshape(observed_data,[prod(dim) nSubj]),stdblk),...
-           dim); 
+           dim);
+       
+      % Making the three observed boundaries: dilated boundary, eroded
+      % boundary, and dilated - eroded boundary.
+      observed_AC = observed_mean >= thr;
+      observed_AC_ero = imerode(observed_AC,se);
+      observed_AC_dil = imdilate(observed_AC,se);
+      observed_delta_AC_ero = observed_AC - observed_AC_ero;
+      observed_delta_AC_dil = observed_AC_dil - observed_AC;
+      observed_delta_AC_ero_dil = (observed_AC_dil - observed_AC)|(observed_AC - observed_AC_ero);
        
       % Residuals
       resid = bsxfun(@minus,observed_data,observed_mean);
       resid = spdiags(1./reshape(observed_std, [prod(dim) 1]), 0,prod(dim),prod(dim))*reshape(resid,[prod(dim) nSubj]); 
-      
-      
-      
+            
       % Implementing the Multiplier Boostrap to obtain confidence intervals
       for k=1:nBoot 
           gaussian_rand        = normrnd(0,1,[nSubj, 1]);
@@ -134,13 +147,17 @@ for t=1:nRlz
           resid_field          = sum(resid_bootstrap, 3)/sqrt(nSubj); 
 
           supG_raw(k)          = max(abs(resid_field(true_boundary)));
+          supG_raw_dil(k)      = max(abs(resid_field(observed_delta_AC_dil)));
+          supG_raw_ero(k)      = max(abs(resid_field(observed_delta_AC_ero)));
+          supG_raw_ero_dil(k)  = max(abs(resid_field(observed_delta_AC_ero_dil)));
           
           if t==nRlz
               raw_field_boundary_store(:,k)         = resid_field(true_boundary);
           end 
       end
     middle_contour                = AC;
-      
+    
+    % True boundary results
     supGa_raw_80                     = prctile(supG_raw, 80);
     supGa_raw_90                     = prctile(supG_raw, 90);
     supGa_raw_95                     = prctile(supG_raw, 95);
@@ -164,7 +181,33 @@ for t=1:nRlz
     mid_on_upper_raw_95              = upper_contour_raw_95.*middle_contour;
     lower_on_mid_raw_95              = middle_contour.*lower_contour_raw_95;
     upper_subset_mid_raw_95          = upper_contour_raw_95 - mid_on_upper_raw_95;
-    mid_subset_lower_raw_95          = middle_contour - lower_on_mid_raw_95;  
+    mid_subset_lower_raw_95          = middle_contour - lower_on_mid_raw_95;
+    
+    % Dilated estimated boundary results
+    supGa_raw_80_dil                     = prctile(supG_raw_dil, 80);
+    supGa_raw_90_dil                     = prctile(supG_raw_dil, 90);
+    supGa_raw_95_dil                     = prctile(supG_raw_dil, 95);
+       
+    lower_contour_raw_80_dil             = observed_mean >= thr - supGa_raw_80_dil*tau*observed_std;
+    upper_contour_raw_80_dil             = observed_mean >= thr + supGa_raw_80_dil*tau*observed_std;
+    mid_on_upper_raw_80_dil              = upper_contour_raw_80_dil.*middle_contour;
+    lower_on_mid_raw_80_dil              = middle_contour.*lower_contour_raw_80_dil;
+    upper_subset_mid_raw_80_dil          = upper_contour_raw_80_dil - mid_on_upper_raw_80_dil;
+    mid_subset_lower_raw_80_dil          = middle_contour - lower_on_mid_raw_80_dil;
+    
+    lower_contour_raw_90_dil             = observed_mean >= thr - supGa_raw_90_dil*tau*observed_std;
+    upper_contour_raw_90_dil             = observed_mean >= thr + supGa_raw_90_dil*tau*observed_std;
+    mid_on_upper_raw_90_dil              = upper_contour_raw_90_dil.*middle_contour;
+    lower_on_mid_raw_90_dil              = middle_contour.*lower_contour_raw_90_dil;
+    upper_subset_mid_raw_90_dil          = upper_contour_raw_90_dil - mid_on_upper_raw_90_dil;
+    mid_subset_lower_raw_90_dil          = middle_contour - lower_on_mid_raw_90_dil;    
+    
+    lower_contour_raw_95_dil             = observed_mean >= thr - supGa_raw_95_dil*tau*observed_std;
+    upper_contour_raw_95_dil             = observed_mean >= thr + supGa_raw_95_dil*tau*observed_std;
+    mid_on_upper_raw_95_dil              = upper_contour_raw_95_dil.*middle_contour;
+    lower_on_mid_raw_95_dil              = middle_contour.*lower_contour_raw_95_dil;
+    upper_subset_mid_raw_95_dil          = upper_contour_raw_95_dil - mid_on_upper_raw_95_dil;
+    mid_subset_lower_raw_95_dil          = middle_contour - lower_on_mid_raw_95_dil;
     
     %
     % Storing all variables of interest
