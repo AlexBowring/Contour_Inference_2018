@@ -265,7 +265,7 @@ for t=1:nRlz
     upper_contour_raw_80_gaussian             = observed_mean >= thr + supGa_raw_80_gaussian*tau*observed_std;
     lower_contour_raw_80_gaussian_volume_prct = sum(lower_contour_raw_80_gaussian(:))/middle_contour_volume;
     upper_contour_raw_80_gaussian_volume_prct = sum(upper_contour_raw_80_gaussian(:))/middle_contour_volume;
-    mid_on_upper_raw_80_gaussian              = upper_contour_raw_80.*middle_contour;
+    mid_on_upper_raw_80_gaussian              = upper_contour_raw_80_gaussian.*middle_contour;
     lower_on_mid_raw_80_gaussian              = middle_contour.*lower_contour_raw_80_gaussian;
     upper_subset_mid_raw_80_gaussian          = upper_contour_raw_80_gaussian - mid_on_upper_raw_80_gaussian;
     mid_subset_lower_raw_80_gaussian          = middle_contour - lower_on_mid_raw_80_gaussian;
@@ -297,7 +297,7 @@ for t=1:nRlz
     upper_contour_raw_80_ero_dil_gaussian             = observed_mean >= thr + supGa_raw_80_ero_dil_gaussian*tau*observed_std;
     lower_contour_raw_80_ero_dil_gaussian_volume_prct = sum(lower_contour_raw_80_ero_dil_gaussian(:))/middle_contour_volume;
     upper_contour_raw_80_ero_dil_gaussian_volume_prct = sum(upper_contour_raw_80_ero_dil_gaussian(:))/middle_contour_volume;
-    mid_on_upper_raw_80_ero_dil_gaussian              = upper_contour_raw_80.*middle_contour;
+    mid_on_upper_raw_80_ero_dil_gaussian              = upper_contour_raw_80_ero_dil_gaussian.*middle_contour;
     lower_on_mid_raw_80_ero_dil_gaussian              = middle_contour.*lower_contour_raw_80_ero_dil_gaussian;
     upper_subset_mid_raw_80_ero_dil_gaussian          = upper_contour_raw_80_ero_dil_gaussian - mid_on_upper_raw_80_ero_dil_gaussian;
     mid_subset_lower_raw_80_ero_dil_gaussian          = middle_contour - lower_on_mid_raw_80_ero_dil_gaussian;
@@ -330,7 +330,7 @@ for t=1:nRlz
     upper_contour_raw_80_signflips             = observed_mean >= thr + supGa_raw_80_signflips*tau*observed_std;
     lower_contour_raw_80_signflips_volume_prct = sum(lower_contour_raw_80_signflips(:))/middle_contour_volume;
     upper_contour_raw_80_signflips_volume_prct = sum(upper_contour_raw_80_signflips(:))/middle_contour_volume;
-    mid_on_upper_raw_80_signflips              = upper_contour_raw_80.*middle_contour;
+    mid_on_upper_raw_80_signflips              = upper_contour_raw_80_signflips.*middle_contour;
     lower_on_mid_raw_80_signflips              = middle_contour.*lower_contour_raw_80_signflips;
     upper_subset_mid_raw_80_signflips          = upper_contour_raw_80_signflips - mid_on_upper_raw_80_signflips;
     mid_subset_lower_raw_80_signflips          = middle_contour - lower_on_mid_raw_80_signflips;
@@ -362,7 +362,7 @@ for t=1:nRlz
     upper_contour_raw_80_ero_dil_signflips             = observed_mean >= thr + supGa_raw_80_ero_dil_signflips*tau*observed_std;
     lower_contour_raw_80_ero_dil_signflips_volume_prct = sum(lower_contour_raw_80_ero_dil_signflips(:))/middle_contour_volume;
     upper_contour_raw_80_ero_dil_signflips_volume_prct = sum(upper_contour_raw_80_ero_dil_signflips(:))/middle_contour_volume;
-    mid_on_upper_raw_80_ero_dil_signflips              = upper_contour_raw_80.*middle_contour;
+    mid_on_upper_raw_80_ero_dil_signflips              = upper_contour_raw_80_ero_dil_signflips.*middle_contour;
     lower_on_mid_raw_80_ero_dil_signflips              = middle_contour.*lower_contour_raw_80_ero_dil_signflips;
     upper_subset_mid_raw_80_ero_dil_signflips          = upper_contour_raw_80_ero_dil_signflips - mid_on_upper_raw_80_ero_dil_signflips;
     mid_subset_lower_raw_80_ero_dil_signflips          = middle_contour - lower_on_mid_raw_80_ero_dil_signflips;
