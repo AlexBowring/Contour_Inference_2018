@@ -84,6 +84,24 @@ upper_contour_raw_80_signflips_volume_prct_store = zeros(nRlz, 1);
 lower_contour_raw_80_ero_dil_signflips_volume_prct_store = zeros(nRlz, 1);
 upper_contour_raw_80_ero_dil_signflips_volume_prct_store = zeros(nRlz, 1);
 
+lower_contour_raw_90_gaussian_volume_prct_store = zeros(nRlz, 1);
+upper_contour_raw_90_gaussian_volume_prct_store = zeros(nRlz, 1);
+lower_contour_raw_90_ero_dil_gaussian_volume_prct_store = zeros(nRlz, 1);
+upper_contour_raw_90_ero_dil_gaussian_volume_prct_store = zeros(nRlz, 1);
+lower_contour_raw_90_signflips_volume_prct_store = zeros(nRlz, 1);
+upper_contour_raw_90_signflips_volume_prct_store = zeros(nRlz, 1);
+lower_contour_raw_90_ero_dil_signflips_volume_prct_store = zeros(nRlz, 1);
+upper_contour_raw_90_ero_dil_signflips_volume_prct_store = zeros(nRlz, 1);
+
+lower_contour_raw_95_gaussian_volume_prct_store = zeros(nRlz, 1);
+upper_contour_raw_95_gaussian_volume_prct_store = zeros(nRlz, 1);
+lower_contour_raw_95_ero_dil_gaussian_volume_prct_store = zeros(nRlz, 1);
+upper_contour_raw_95_ero_dil_gaussian_volume_prct_store = zeros(nRlz, 1);
+lower_contour_raw_95_signflips_volume_prct_store = zeros(nRlz, 1);
+upper_contour_raw_95_signflips_volume_prct_store = zeros(nRlz, 1);
+lower_contour_raw_95_ero_dil_signflips_volume_prct_store = zeros(nRlz, 1);
+upper_contour_raw_95_ero_dil_signflips_volume_prct_store = zeros(nRlz, 1);
+
 % This stores the vector SupG for each run
 supG_raw_gaussian_store          = zeros(nBoot, nRlz);
 supG_raw_ero_dil_gaussian_store  = zeros(nBoot, nRlz);
