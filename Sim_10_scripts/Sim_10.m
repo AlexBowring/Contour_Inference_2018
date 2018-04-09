@@ -190,9 +190,12 @@ for t=1:nRlz
       observed_AC_ero = imerode(observed_AC,se);
       observed_AC_dil = imdilate(observed_AC,se);
       observed_delta_AC_ero = observed_AC - observed_AC_ero;
+      observed_delta_AC_ero = logical(observed_delta_AC_ero);
       observed_delta_AC_dil = observed_AC_dil - observed_AC;
+      observed_delta_AC_dil = logical(observed_delta_AC_dil);
       observed_delta_AC_ero_dil = (observed_AC_dil - observed_AC)|(observed_AC - observed_AC_ero);
-       
+      observed_delta_AC_ero_dil = logical(observed_delta_AC_ero_dil);
+      
       % Residuals
       resid = bsxfun(@minus,observed_data,observed_mean);
       resid = spdiags(1./reshape(observed_std, [prod(dim) 1]), 0,prod(dim),prod(dim))*reshape(resid,[prod(dim) nSubj]); 
@@ -410,74 +413,74 @@ for t=1:nRlz
 
     if sum(upper_subset_mid_raw_80_ero(:))+sum(mid_subset_lower_raw_80_ero(:))==0
       subset_success_vector_raw_80_ero(t) = 1; 
-      fprintf('raw nominal 80 success! \n');
+      fprintf('raw nominal 80 ero success! \n');
     else 
       subset_success_vector_raw_80_ero(t) = 0; 
-      fprintf('raw nominal 80 failure! \n');
+      fprintf('raw nominal 80 ero failure! \n');
     end 
     
     if sum(upper_subset_mid_raw_90_ero(:))+sum(mid_subset_lower_raw_90_ero(:))==0
       subset_success_vector_raw_90_ero(t) = 1; 
-      fprintf('raw nominal 90 success! \n');
+      fprintf('raw nominal 90 ero success! \n');
     else 
       subset_success_vector_raw_90_ero(t) = 0; 
-      fprintf('raw nominal 90 failure! \n');
+      fprintf('raw nominal 90 ero failure! \n');
     end 
     
      if sum(upper_subset_mid_raw_95_ero(:))+sum(mid_subset_lower_raw_95_ero(:))==0
       subset_success_vector_raw_95_ero(t) = 1; 
-      fprintf('raw nominal 95 success! \n');
+      fprintf('raw nominal 95 ero success! \n');
     else 
       subset_success_vector_raw_95_ero(t) = 0; 
-      fprintf('raw nominal 95 failure! \n');
+      fprintf('raw nominal 95 ero failure! \n');
     end 
     
     if sum(upper_subset_mid_raw_80_dil(:))+sum(mid_subset_lower_raw_80_dil(:))==0
       subset_success_vector_raw_80_dil(t) = 1; 
-      fprintf('raw nominal 80 success! \n');
+      fprintf('raw nominal 80 dil success! \n');
     else 
       subset_success_vector_raw_80_dil(t) = 0; 
-      fprintf('raw nominal 80 failure! \n');
+      fprintf('raw nominal 80 dil failure! \n');
     end 
     
     if sum(upper_subset_mid_raw_90_dil(:))+sum(mid_subset_lower_raw_90_dil(:))==0
       subset_success_vector_raw_90_dil(t) = 1; 
-      fprintf('raw nominal 90 success! \n');
+      fprintf('raw nominal 90 dil success! \n');
     else 
       subset_success_vector_raw_90_dil(t) = 0; 
-      fprintf('raw nominal 90 failure! \n');
+      fprintf('raw nominal 90 dil failure! \n');
     end 
     
      if sum(upper_subset_mid_raw_95_dil(:))+sum(mid_subset_lower_raw_95_dil(:))==0
       subset_success_vector_raw_95_dil(t) = 1; 
-      fprintf('raw nominal 95 success! \n');
+      fprintf('raw nominal 95 dil success! \n');
     else 
       subset_success_vector_raw_95_dil(t) = 0; 
-      fprintf('raw nominal 95 failure! \n');
+      fprintf('raw nominal 95 dil failure! \n');
     end 
 
     if sum(upper_subset_mid_raw_80_ero_dil(:))+sum(mid_subset_lower_raw_80_ero_dil(:))==0
       subset_success_vector_raw_80_ero_dil(t) = 1; 
-      fprintf('raw nominal 80 success! \n');
+      fprintf('raw nominal 80 ero + dil success! \n');
     else 
       subset_success_vector_raw_80_ero_dil(t) = 0; 
-      fprintf('raw nominal 80 failure! \n');
+      fprintf('raw nominal 80 ero + dil failure! \n');
     end 
     
     if sum(upper_subset_mid_raw_90_ero_dil(:))+sum(mid_subset_lower_raw_90_ero_dil(:))==0
       subset_success_vector_raw_90_ero_dil(t) = 1; 
-      fprintf('raw nominal 90 success! \n');
+      fprintf('raw nominal 90 ero + dil success! \n');
     else 
       subset_success_vector_raw_90_ero_dil(t) = 0; 
-      fprintf('raw nominal 90 failure! \n');
+      fprintf('raw nominal 90 ero + dil failure! \n');
     end 
     
      if sum(upper_subset_mid_raw_95_ero_dil(:))+sum(mid_subset_lower_raw_95_ero_dil(:))==0
       subset_success_vector_raw_95_ero_dil(t) = 1; 
-      fprintf('raw nominal 95 success! \n');
+      fprintf('raw nominal 95 ero + dil success! \n');
     else 
       subset_success_vector_raw_95_ero_dil(t) = 0; 
-      fprintf('raw nominal 95 failure! \n');
+      fprintf('raw nominal 95 ero + dil failure! \n');
     end 
 
 end
