@@ -285,22 +285,22 @@ for t=1:nRlz
             
       % Implementing the Multiplier Boostrap to obtain confidence intervals
       for k=1:nBoot 
-          % Applying the bootstrap using gaussian random variables (gaussian_rand) and Rademacher variables (signflips)
-          gaussian_rand                          = normrnd(0,1,[nSubj, 1]);
-          resid_bootstrap_gaussian               = resid*spdiags(gaussian_rand, 0, nSubj, nSubj);
-          resid_bootstrap_gaussian               = reshape(resid_bootstrap_gaussian, [dim nSubj]);
-          resid_field_gaussian                   = sum(resid_bootstrap_gaussian, 3)/sqrt(nSubj); 
+          % Applying the bootstrap using Rademacher variables (signflips)
+          signflips                              = randi(2,[nSubj,1])*2-3;
+          resid_bootstrap                        = resid*spdiags(signflips, 0, nSubj, nSubj);
+          resid_bootstrap                        = reshape(resid_bootstrap, [dim nSubj]);
+          resid_field                            = sum(resid_bootstrap, 3)/sqrt(nSubj); 
 
-          supG_raw(k)          = max(abs(resid_field_gaussian(true_boundary)));
-          supG_raw_ero(k)      = max(abs(resid_field_gaussian(observed_delta_AC_ero)));
-          supG_raw_dil(k)      = max(abs(resid_field_gaussian(observed_delta_AC_dil)));
-          supG_raw_ero_dil(k)  = max(abs(resid_field_gaussian(observed_delta_AC_ero_dil)));
+          supG_raw(k)          = max(abs(resid_field(true_boundary)));
+          supG_raw_ero(k)      = max(abs(resid_field(observed_delta_AC_ero)));
+          supG_raw_dil(k)      = max(abs(resid_field(observed_delta_AC_dil)));
+          supG_raw_ero_dil(k)  = max(abs(resid_field(observed_delta_AC_ero_dil)));
           
           % Calculating the maximum over the linear boundary edges
-          lshift_boundary_values = abs((resid_field_gaussian(lshift) + resid_field_gaussian(lshift(:,[dim(2) 1:dim(2)-1])))/2);
-          rshift_boundary_values = abs((resid_field_gaussian(rshift) + resid_field_gaussian(rshift(:,[2:dim(2) 1])))/2);
-          ushift_boundary_values = abs((resid_field_gaussian(ushift) + resid_field_gaussian(ushift([dim(1) 1:dim(1)-1],:)))/2);
-          dshift_boundary_values = abs((resid_field_gaussian(dshift) + resid_field_gaussian(dshift([2:dim(1) 1],:)))/2);
+          lshift_boundary_values = abs((resid_field(lshift) + resid_field(lshift(:,[dim(2) 1:dim(2)-1])))/2);
+          rshift_boundary_values = abs((resid_field(rshift) + resid_field(rshift(:,[2:dim(2) 1])))/2);
+          ushift_boundary_values = abs((resid_field(ushift) + resid_field(ushift([dim(1) 1:dim(1)-1],:)))/2);
+          dshift_boundary_values = abs((resid_field(dshift) + resid_field(dshift([2:dim(1) 1],:)))/2);
           supG_raw_linear(k)   = max([lshift_boundary_values; rshift_boundary_values; ushift_boundary_values; dshift_boundary_values]);
       end
       
@@ -597,11 +597,11 @@ for t=1:nRlz
     upper_contour_raw_95_linear_volume_prct_store(t)              = upper_contour_raw_95_linear_volume_prct;
     
     
-    if sum(upper_subset_mid_raw_90(:))+sum(mid_subset_lower_raw_90(:))==0
-      subset_success_vector_raw_90(t) = 1; 
+    if sum(upper_subset_mid_raw_80(:))+sum(mid_subset_lower_raw_80(:))==0
+      subset_success_vector_raw_80(t) = 1; 
       fprintf('raw nominal 90 true boundary success! \n');
     else 
-      subset_success_vector_raw_90(t) = 0; 
+      subset_success_vector_raw_80(t) = 0; 
       fprintf('raw nominal 90 true boundary failure! \n');
     end 
 
@@ -621,11 +621,11 @@ for t=1:nRlz
       fprintf('raw nominal 95 true boundary failure! \n');
     end 
 
-    if sum(upper_subset_mid_raw_90_ero(:))+sum(mid_subset_lower_raw_90_ero(:))==0
-      subset_success_vector_raw_90_ero(t) = 1; 
+    if sum(upper_subset_mid_raw_80_ero(:))+sum(mid_subset_lower_raw_80_ero(:))==0
+      subset_success_vector_raw_80_ero(t) = 1; 
       fprintf('raw nominal 90 ero boundary success! \n');
     else 
-      subset_success_vector_raw_90_ero(t) = 0; 
+      subset_success_vector_raw_80_ero(t) = 0; 
       fprintf('raw nominal 90 ero boundary failure! \n');
     end 
 
@@ -645,11 +645,11 @@ for t=1:nRlz
       fprintf('raw nominal 95 ero boundary failure! \n');
     end 
 
-    if sum(upper_subset_mid_raw_90_dil(:))+sum(mid_subset_lower_raw_90_dil(:))==0
-      subset_success_vector_raw_90_dil(t) = 1; 
+    if sum(upper_subset_mid_raw_80_dil(:))+sum(mid_subset_lower_raw_80_dil(:))==0
+      subset_success_vector_raw_80_dil(t) = 1; 
       fprintf('raw nominal 90 dil boundary success! \n');
     else 
-      subset_success_vector_raw_90_dil(t) = 0; 
+      subset_success_vector_raw_80_dil(t) = 0; 
       fprintf('raw nominal 90 dil boundary failure! \n');
     end 
 
@@ -669,11 +669,11 @@ for t=1:nRlz
       fprintf('raw nominal 95 dil boundary failure! \n');
     end 
 
-    if sum(upper_subset_mid_raw_90_ero_dil(:))+sum(mid_subset_lower_raw_90_ero_dil(:))==0
-      subset_success_vector_raw_90_ero_dil(t) = 1; 
+    if sum(upper_subset_mid_raw_80_ero_dil(:))+sum(mid_subset_lower_raw_80_ero_dil(:))==0
+      subset_success_vector_raw_80_ero_dil(t) = 1; 
       fprintf('raw nominal 90 ero_dil boundary success! \n');
     else 
-      subset_success_vector_raw_90_ero_dil(t) = 0; 
+      subset_success_vector_raw_80_ero_dil(t) = 0; 
       fprintf('raw nominal 90 ero_dil boundary failure! \n');
     end 
 
@@ -693,11 +693,11 @@ for t=1:nRlz
       fprintf('raw nominal 95 ero_dil boundary failure! \n');
     end 
 
-    if sum(upper_subset_mid_raw_90_linear(:))+sum(mid_subset_lower_raw_90_linear(:))==0
-      subset_success_vector_raw_90_linear(t) = 1; 
+    if sum(upper_subset_mid_raw_80_linear(:))+sum(mid_subset_lower_raw_80_linear(:))==0
+      subset_success_vector_raw_80_linear(t) = 1; 
       fprintf('raw nominal 90 linear boundary success! \n');
     else 
-      subset_success_vector_raw_90_linear(t) = 0; 
+      subset_success_vector_raw_80_linear(t) = 0; 
       fprintf('raw nominal 90 linear boundary failure! \n');
     end 
 
