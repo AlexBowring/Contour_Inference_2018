@@ -13,8 +13,8 @@ function [bdryValues] = linear_interp_boundary(AC, resid_field, nSubj)
 % bdryValues: a 2D array containing the values of the random fields on the estimated boundary from the threshold. The values
 % are interpolations using a 4-connectivity grid and obtained by averaging the points inside and outside the excursion set.
 
-field_dimension = length(size(AC));
-
+dim = size(AC);
+field_dimension = length(dim);
 
 if field_dimension == 2
   % 2D with 4-connectivity	
@@ -53,11 +53,11 @@ if field_dimension == 2
   rshift_boundary_values = (resid_field(repmat(rshift, [1, 1, nSubj])) + resid_field(repmat(rshift(:,[2:dim(2) 1]), [1, 1, nSubj])))/2;
   rshift_boundary_values = reshape(rshift_boundary_values, [rshift_points, nSubj]);
   ushift_boundary_values = (resid_field(repmat(ushift, [1, 1, nSubj])) + resid_field(repmat(ushift([dim(1) 1:dim(1)-1],:), [1, 1, nSubj])))/2;
-  ushift_boundary_values = reshape(ushift_boundary_values, [rshift_points, nSubj]);
+  ushift_boundary_values = reshape(ushift_boundary_values, [ushift_points, nSubj]);
   dshift_boundary_values = (resid_field(repmat(dshift, [1, 1, nSubj])) + resid_field(repmat(dshift([2:dim(1) 1],:), [1, 1, nSubj])))/2;
-  dshift_boundary_values = reshape(dshift_boundary_values, [rshift_points, nSubj]);
+  dshift_boundary_values = reshape(dshift_boundary_values, [dshift_points, nSubj]);
 
-  bdryValues = [ lshift_boundary_values; rshift_boundary_values; ushift_boundary_values; dshift_boundary_values ]
+  bdryValues = [ lshift_boundary_values; rshift_boundary_values; ushift_boundary_values; dshift_boundary_values ];
 
 end 
 
@@ -71,7 +71,7 @@ if field_dimension == 3
     lshift              = AC; % initialize
     lshift(:,1:end-1,:) = horz;
     lshift              = lshift & ~AC;
-    lshift_points.      = sum(lshift(:));
+    lshift_points       = sum(lshift(:));
     % Compute the right shifted horizontal edges
     rshift            	= AC; % initialize
     rshift(:,2:end,:) 	= horz;
@@ -112,15 +112,15 @@ if field_dimension == 3
     rshift_boundary_values = (resid_field(repmat(rshift, [1, 1, 1, nSubj])) + resid_field(repmat(rshift(:,[2:dim(2) 1],:), [1, 1, 1, nSubj])))/2;
     rshift_boundary_values = reshape(rshift_boundary_values, [rshift_points, nSubj]);
     ushift_boundary_values = (resid_field(repmat(ushift, [1, 1, 1, nSubj])) + resid_field(repmat(ushift([dim(1) 1:dim(1)-1],:,:), [1, 1, 1, nSubj])))/2;
-    ushift_boundary_values = reshape(ushift_boundary_values, [rshift_points, nSubj]);
+    ushift_boundary_values = reshape(ushift_boundary_values, [ushift_points, nSubj]);
     dshift_boundary_values = (resid_field(repmat(dshift, [1, 1, 1, nSubj])) + resid_field(repmat(dshift([2:dim(1) 1],:,:), [1, 1, 1, nSubj])))/2;
-    dshift_boundary_values = reshape(dshift_boundary_values, [rshift_points, nSubj]);
+    dshift_boundary_values = reshape(dshift_boundary_values, [dshift_points, nSubj]);
     bshift_boundary_values = (resid_field(repmat(bshift, [1, 1, 1, nSubj])) + resid_field(repmat(bshift(:,:,[dim(3) 1:dim(3)-1]), [1, 1, 1, nSubj])))/2;
     bshift_boundary_values = reshape(bshift_boundary_values, [bshift_points, nSubj]);
     fshift_boundary_values = (resid_field(repmat(fshift, [1, 1, 1, nSubj])) + resid_field(repmat(fshift(:,:,[2:dim(3) 1]), [1, 1, 1, nSubj])))/2;
     fshift_boundary_values = reshape(fshift_boundary_values, [fshift_points, nSubj]);
 
     % concatinated values of field on the linear edges 
-    bdryValues = [ lshift_boundary_values; rshift_boundary_values; ushift_boundary_values; dshift_boundary_values; bshift_boundary_values; fshift_boundary_values ] ;
+    bdryValues = [ lshift_boundary_values; rshift_boundary_values; ushift_boundary_values; dshift_boundary_values; bshift_boundary_values; fshift_boundary_values ]; 
 
 end

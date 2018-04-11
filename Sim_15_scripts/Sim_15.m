@@ -1,4 +1,4 @@
-function Sim_14(nSubj,SvNm,nRlz)
+function Sim_15(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
@@ -30,7 +30,8 @@ dim     = [100 100 100];
 mag     = 3;
 rad     = 30;
 smo     = 10;
-rimFWHM = 15; 				 
+rimFWHM = 15;
+stdblk  = prod(dim([1 2])/2);
 thr     = 2;
 
 %-----------Initialization of Some Variables
@@ -79,6 +80,8 @@ upper_contour_raw_95_volume_prct_store          = zeros(nRlz, 1);
 lower_contour_raw_95_linear_volume_prct_store   = zeros(nRlz, 1);
 upper_contour_raw_95_linear_volume_prct_store   = zeros(nRlz, 1);
 
+observed_middle_contour_volume_store            = zeros(nRlz, 1);
+
 % This stores the vector SupG for each run
 supG_raw_store         = zeros(nBoot, nRlz);
 supG_raw_linear_store  = zeros(nBoot, nRlz);
@@ -116,12 +119,12 @@ supG_raw              = zeros(nBoot,1);
 supG_raw_linear       = zeros(nBoot,1);
 
 % Creating linearly increasing signal across columns
-Sig = SpheroidSignal(dim, rad, mag, 0);
+Sig = SpheroidSignal(wdim, rad, mag, 0);
 
 % Smoothing the signal
 Sigs = zeros(wdim);
 ss   = spm_smooth(Sig,Sigs,smo*ones(1,3));
-Sigs      = Sigs;
+Sigs = Sigs;
 
 % Truncate to avoid edge effects
 tSigs          = Sigs(trnind{1}, trnind{2}, trnind{3});
@@ -131,15 +134,12 @@ Sig            = (mag/maxtSigs)*tSigs;
 % Uncomment to look at the Signal
 %imagesc(Sig); axis image; colorbar
 AC = Sig >= thr;
+middle_contour                = AC;
+middle_contour_volume         = sum(middle_contour(:));
 
 % Variables for computing the estimated boundary
-[a,b] = ndgrid(-1:1);
-se = strel('arbitrary',sqrt(a.^2 + b.^2) <=1);
-
-% The boundary for Sig > 2, note that Sig = 2.02 in the 51st column
-true_boundary = zeros(dim);
-true_boundary(:,51) = ones(100, 1);
-true_boundary = logical(true_boundary);
+[a,b,c] = ndgrid(-1:1);
+se = strel('arbitrary',sqrt(a.^2 + b.^2 + c.^2) <=1);
 
 for t=1:nRlz
     fprintf('.');
@@ -147,24 +147,25 @@ for t=1:nRlz
 	    %
 	    % Generate random realizations of signal + noise
 	    %
-        raw_noise(:,:,i) = randn(wdim); %- Noise that will be added to the signal 
+        raw_noise(:,:,:,i) = randn(wdim); %- Noise that will be added to the signal 
 
         %
         % smooth noise  
         %
-        [Noises,tt] = spm_conv(raw_noise(:,:,i),smo,smo);
+        Noises = zeros(wdim);
+        tt     = spm_smooth(raw_noise(:,:,:,i),Noises,smo*ones(1,3));
         Noises = Noises/sqrt(tt);      
       
         %
         % Truncate to avoid edge effects
         %
-        tNoises = Noises(trnind{1},trnind{2});       
+        tNoises = Noises(trnind{1},trnind{2},trnind{3});       
         tImgs = Sig + tNoises; % Creates the true image of smoothed signal + smoothed noise
-        observed_data(:,:,i) = tImgs;
+        observed_data(:,:,:,i) = tImgs;
         
       end %========== Loop i (subjects)
       
-      observed_mean = mean(observed_data,3);
+      observed_mean = mean(observed_data,4);
 
       observed_std = reshape(...
          biasmystd(reshape(observed_data,[prod(dim) nSubj]),stdblk),...
@@ -174,55 +175,35 @@ for t=1:nRlz
       % boundary, and dilated - eroded boundary.
       observed_AC = observed_mean >= thr;
       observed_AC_volume = sum(observed_AC(:)); 
-
-      % Making the interpolated boundary edges
-      % Horizontal edges
-      horz = observed_AC(:,2:end) | observed_AC(:,1:end-1);
-      % Compute the left shifted horizontal edges
-      lshift            = observed_AC; % initialize
-      lshift(:,1:end-1) = horz;
-      lshift            = lshift & ~observed_AC;
-      %%% Compute the right shifted horizontal edges
-      rshift          = observed_AC; % initialize
-      rshift(:,2:end) = horz;
-      rshift          = rshift & ~observed_AC;
-      % Vertical edges
-      vert = observed_AC(1:end-1,:) | observed_AC(2:end,:);
-      %%% Compute the right shifted horizontal edges
-      ushift = observed_AC;
-      ushift(1:end-1,:) = vert;
-      ushift = ushift & ~observed_AC;
-      %%% Compute the down shifted vertical edges
-      dshift = observed_AC;
-      %%% Values of random field on down shifted vertical edges
-      dshift(2:end,:)   = vert;
-      dshift = dshift & ~observed_AC;
  
       % Residuals
       resid = bsxfun(@minus,observed_data,observed_mean);
-      resid = spdiags(1./reshape(observed_std, [prod(dim) 1]), 0,prod(dim),prod(dim))*reshape(resid,[prod(dim) nSubj]); 
-       
+      resid = spdiags(1./reshape(observed_std, [prod(dim) 1]), 0,prod(dim),prod(dim))*reshape(resid,[prod(dim) nSubj]);
+      resid = reshape(resid, [dim nSubj]);
+      
+      % Extracting only the residuals along the true boundary (using the
+      % linear interpolation method). 
+      resid_true_boundary = linear_interp_boundary(AC, resid, nSubj);
+      
+      % Extracting only the residuals along the esitimated boundary (using the linear interpolation method)
+      resid_estimated_boundary = linear_interp_boundary(observed_AC, resid, nSubj);
+      
       %% Implementing the Multiplier Boostrap to obtain confidence intervals
       for k=1:nBoot 
           % Applying the bootstrap using Rademacher variables (signflips)
           signflips                              = randi(2,[nSubj,1])*2-3;
-          resid_bootstrap                        = resid*spdiags(signflips, 0, nSubj, nSubj);
-          resid_bootstrap                        = reshape(resid_bootstrap, [dim nSubj]);
-          resid_field                            = sum(resid_bootstrap, 3)/sqrt(nSubj); 
-
-          supG_raw(k)          = max(abs(resid_field(true_boundary)));
           
-          % Calculating the maximum over the linear boundary edges
-          lshift_boundary_values = abs((resid_field(lshift) + resid_field(lshift(:,[dim(2) 1:dim(2)-1])))/2);
-          rshift_boundary_values = abs((resid_field(rshift) + resid_field(rshift(:,[2:dim(2) 1])))/2);
-          ushift_boundary_values = abs((resid_field(ushift) + resid_field(ushift([dim(1) 1:dim(1)-1],:)))/2);
-          dshift_boundary_values = abs((resid_field(dshift) + resid_field(dshift([2:dim(1) 1],:)))/2);
-          supG_raw_linear(k)   = max([lshift_boundary_values; rshift_boundary_values; ushift_boundary_values; dshift_boundary_values]);
+          % True boundary
+          true_boundary_bootstrap                = resid_true_boundary*spdiags(signflips, 0, nSubj, nSubj);
+          true_boundary_resid_field              = sum(true_boundary_bootstrap, 2)/sqrt(nSubj); 
+          supG_raw(k)                            = max(abs(true_boundary_resid_field));
+          
+          % Estimated boundary
+          estimated_boundary_bootstrap           = resid_estimated_boundary*spdiags(signflips, 0, nSubj, nSubj);
+          estimated_boundary_resid_field         = sum(estimated_boundary_bootstrap, 2)/sqrt(nSubj); 
+          supG_raw_linear(k)                     = max(abs(estimated_boundary_resid_field));
           
       end
-    
-    middle_contour                = AC;
-    middle_contour_volume         = sum(middle_contour(:));
     
     % Gaussian random variable results for the true and estimated boundary
     % True boundary
@@ -292,56 +273,57 @@ for t=1:nRlz
     %
     % Storing all variables of interest
     %
-    supG_raw_store(:,t)                                    = supG_raw;
-    threshold_raw_80_store(t)                              = supGa_raw_80;
-    lower_contour_raw_80_store(t,:,:)                      = lower_contour_raw_80;
-    upper_contour_raw_80_store(t,:,:)                      = upper_contour_raw_80;
-    upper_subset_mid_raw_80_store(t,:,:)                   = upper_subset_mid_raw_80;
-    mid_subset_lower_raw_80_store(t,:,:)                   = mid_subset_lower_raw_80;
-    lower_contour_raw_80_volume_prct_store(t)              = lower_contour_raw_80_volume_prct;
-    upper_contour_raw_80_volume_prct_store(t)              = upper_contour_raw_80_volume_prct;
+    supG_raw_store(:,t)                                      = supG_raw;
+    threshold_raw_80_store(t)                                = supGa_raw_80;
+    lower_contour_raw_80_store(t,:,:,:)                      = lower_contour_raw_80;
+    upper_contour_raw_80_store(t,:,:,:)                      = upper_contour_raw_80;
+    upper_subset_mid_raw_80_store(t,:,:,:)                   = upper_subset_mid_raw_80;
+    mid_subset_lower_raw_80_store(t,:,:,:)                   = mid_subset_lower_raw_80;
+    lower_contour_raw_80_volume_prct_store(t)                = lower_contour_raw_80_volume_prct;
+    upper_contour_raw_80_volume_prct_store(t)                = upper_contour_raw_80_volume_prct;
  
-    threshold_raw_90_store(t)                              = supGa_raw_90;
-    lower_contour_raw_90_store(t,:,:)                      = lower_contour_raw_90;
-    upper_contour_raw_90_store(t,:,:)                      = upper_contour_raw_90;
-    upper_subset_mid_raw_90_store(t,:,:)                   = upper_subset_mid_raw_90;
-    mid_subset_lower_raw_90_store(t,:,:)                   = mid_subset_lower_raw_90;
-    lower_contour_raw_90_volume_prct_store(t)              = lower_contour_raw_90_volume_prct;
-    upper_contour_raw_90_volume_prct_store(t)              = upper_contour_raw_90_volume_prct;
+    threshold_raw_90_store(t)                                = supGa_raw_90;
+    lower_contour_raw_90_store(t,:,:,:)                      = lower_contour_raw_90;
+    upper_contour_raw_90_store(t,:,:,:)                      = upper_contour_raw_90;
+    upper_subset_mid_raw_90_store(t,:,:,:)                   = upper_subset_mid_raw_90;
+    mid_subset_lower_raw_90_store(t,:,:,:)                   = mid_subset_lower_raw_90;
+    lower_contour_raw_90_volume_prct_store(t)                = lower_contour_raw_90_volume_prct;
+    upper_contour_raw_90_volume_prct_store(t)                = upper_contour_raw_90_volume_prct;
 
-    threshold_raw_95_store(t)                              = supGa_raw_95;
-    lower_contour_raw_95_store(t,:,:)                      = lower_contour_raw_95;
-    upper_contour_raw_95_store(t,:,:)                      = upper_contour_raw_95;
-    upper_subset_mid_raw_95_store(t,:,:)                   = upper_subset_mid_raw_95;
-    mid_subset_lower_raw_95_store(t,:,:)                   = mid_subset_lower_raw_95;
-    lower_contour_raw_95_volume_prct_store(t)              = lower_contour_raw_95_volume_prct;
-    upper_contour_raw_95_volume_prct_store(t)              = upper_contour_raw_95_volume_prct;
+    threshold_raw_95_store(t)                                = supGa_raw_95;
+    lower_contour_raw_95_store(t,:,:,:)                      = lower_contour_raw_95;
+    upper_contour_raw_95_store(t,:,:,:)                      = upper_contour_raw_95;
+    upper_subset_mid_raw_95_store(t,:,:,:)                   = upper_subset_mid_raw_95;
+    mid_subset_lower_raw_95_store(t,:,:,:)                   = mid_subset_lower_raw_95;
+    lower_contour_raw_95_volume_prct_store(t)                = lower_contour_raw_95_volume_prct;
+    upper_contour_raw_95_volume_prct_store(t)                = upper_contour_raw_95_volume_prct;
 
-    supG_raw_linear_store(:,t)                                    = supG_raw_linear;
-    threshold_raw_80_linear_store(t)                              = supGa_raw_80_linear;
-    lower_contour_raw_80_linear_store(t,:,:)                      = lower_contour_raw_80_linear;
-    upper_contour_raw_80_linear_store(t,:,:)                      = upper_contour_raw_80_linear;
-    upper_subset_mid_raw_80_linear_store(t,:,:)                   = upper_subset_mid_raw_80_linear;
-    mid_subset_lower_raw_80_linear_store(t,:,:)                   = mid_subset_lower_raw_80_linear;
-    lower_contour_raw_80_linear_volume_prct_store(t)              = lower_contour_raw_80_linear_volume_prct;
-    upper_contour_raw_80_linear_volume_prct_store(t)              = upper_contour_raw_80_linear_volume_prct;
+    supG_raw_linear_store(:,t)                                      = supG_raw_linear;
+    threshold_raw_80_linear_store(t)                                = supGa_raw_80_linear;
+    lower_contour_raw_80_linear_store(t,:,:,:)                      = lower_contour_raw_80_linear;
+    upper_contour_raw_80_linear_store(t,:,:,:)                      = upper_contour_raw_80_linear;
+    upper_subset_mid_raw_80_linear_store(t,:,:,:)                   = upper_subset_mid_raw_80_linear;
+    mid_subset_lower_raw_80_linear_store(t,:,:,:)                   = mid_subset_lower_raw_80_linear;
+    lower_contour_raw_80_linear_volume_prct_store(t)                = lower_contour_raw_80_linear_volume_prct;
+    upper_contour_raw_80_linear_volume_prct_store(t)                = upper_contour_raw_80_linear_volume_prct;
  
-    threshold_raw_90_linear_store(t)                              = supGa_raw_90_linear;
-    lower_contour_raw_90_linear_store(t,:,:)                      = lower_contour_raw_90_linear;
-    upper_contour_raw_90_linear_store(t,:,:)                      = upper_contour_raw_90_linear;
-    upper_subset_mid_raw_90_linear_store(t,:,:)                   = upper_subset_mid_raw_90_linear;
-    mid_subset_lower_raw_90_linear_store(t,:,:)                   = mid_subset_lower_raw_90_linear;
-    lower_contour_raw_90_linear_volume_prct_store(t)              = lower_contour_raw_90_linear_volume_prct;
-    upper_contour_raw_90_linear_volume_prct_store(t)              = upper_contour_raw_90_linear_volume_prct;
+    threshold_raw_90_linear_store(t)                                = supGa_raw_90_linear;
+    lower_contour_raw_90_linear_store(t,:,:,:)                      = lower_contour_raw_90_linear;
+    upper_contour_raw_90_linear_store(t,:,:,:)                      = upper_contour_raw_90_linear;
+    upper_subset_mid_raw_90_linear_store(t,:,:,:)                   = upper_subset_mid_raw_90_linear;
+    mid_subset_lower_raw_90_linear_store(t,:,:,:)                   = mid_subset_lower_raw_90_linear;
+    lower_contour_raw_90_linear_volume_prct_store(t)                = lower_contour_raw_90_linear_volume_prct;
+    upper_contour_raw_90_linear_volume_prct_store(t)                = upper_contour_raw_90_linear_volume_prct;
 
-    threshold_raw_95_linear_store(t)                              = supGa_raw_95_linear;
-    lower_contour_raw_95_linear_store(t,:,:)                      = lower_contour_raw_95_linear;
-    upper_contour_raw_95_linear_store(t,:,:)                      = upper_contour_raw_95_linear;
-    upper_subset_mid_raw_95_linear_store(t,:,:)                   = upper_subset_mid_raw_95_linear;
-    mid_subset_lower_raw_95_linear_store(t,:,:)                   = mid_subset_lower_raw_95_linear;
-    lower_contour_raw_95_linear_volume_prct_store(t)              = lower_contour_raw_95_linear_volume_prct;
-    upper_contour_raw_95_linear_volume_prct_store(t)              = upper_contour_raw_95_linear_volume_prct;
+    threshold_raw_95_linear_store(t)                                = supGa_raw_95_linear;
+    lower_contour_raw_95_linear_store(t,:,:,:)                      = lower_contour_raw_95_linear;
+    upper_contour_raw_95_linear_store(t,:,:,:)                      = upper_contour_raw_95_linear;
+    upper_subset_mid_raw_95_linear_store(t,:,:,:)                   = upper_subset_mid_raw_95_linear;
+    mid_subset_lower_raw_95_linear_store(t,:,:,:)                   = mid_subset_lower_raw_95_linear;
+    lower_contour_raw_95_linear_volume_prct_store(t)                = lower_contour_raw_95_linear_volume_prct;
+    upper_contour_raw_95_linear_volume_prct_store(t)                = upper_contour_raw_95_linear_volume_prct;
     
+    observed_middle_contour_volume_store(t)                         = observed_AC_volume;
     
     if sum(upper_subset_mid_raw_80(:))+sum(mid_subset_lower_raw_80(:))==0
       subset_success_vector_raw_80(t) = 1; 
@@ -410,6 +392,6 @@ eval(['save ' SvNm ' nSubj nRlz dim smo mag rimFWHM thr nBoot '...
       'subset_success_vector_raw_80 subset_success_vector_raw_90 subset_success_vector_raw_95 subset_success_vector_raw_80_linear subset_success_vector_raw_90_linear subset_success_vector_raw_95_linear low_res_subset_success_vector_raw_80 low_res_subset_success_vector_raw_90 low_res_subset_success_vector_raw_95 low_res_subset_success_vector_raw_80_linear low_res_subset_success_vector_raw_90_linear low_res_subset_success_vector_raw_95_linear '...
       'percentage_success_vector_raw_80 percentage_success_vector_raw_90 percentage_success_vector_raw_95 percentage_success_vector_raw_80_linear percentage_success_vector_raw_90_linear percentage_success_vector_raw_95_linear low_res_percentage_success_vector_raw_80 low_res_percentage_success_vector_raw_90 low_res_percentage_success_vector_raw_95 low_res_percentage_success_vector_raw_80_linear low_res_percentage_success_vector_raw_90_linear low_res_percentage_success_vector_raw_95_linear '...
       'supG_raw_store supG_raw_linear_store low_res_supG_raw_store low_res_supG_raw_linear_store '...
-      'middle_contour_volume observed_AC_volume low_res_middle_contour_volume low_res_observed_AC_volume '...
+      'middle_contour middle_contour_volume observed_middle_contour_volume low_res_middle_contour_volume low_res_observed_AC_volume '...
       'lower_contour_raw_80_volume_prct_store lower_contour_raw_90_volume_prct_store lower_contour_raw_95_volume_prct_store lower_contour_raw_80_linear_volume_prct_store lower_contour_raw_90_linear_volume_prct_store lower_contour_raw_95_linear_volume_prct_store low_res_lower_contour_raw_80_volume_prct_store low_res_lower_contour_raw_90_volume_prct_store low_res_lower_contour_raw_95_volume_prct_store low_res_lower_contour_raw_80_linear_volume_prct_store low_res_lower_contour_raw_90_linear_volume_prct_store low_res_lower_contour_raw_95_linear_volume_prct_store '...
       'upper_contour_raw_80_volume_prct_store upper_contour_raw_90_volume_prct_store upper_contour_raw_95_volume_prct_store upper_contour_raw_80_linear_volume_prct_store upper_contour_raw_90_linear_volume_prct_store upper_contour_raw_95_linear_volume_prct_store low_res_upper_contour_raw_80_volume_prct_store low_res_upper_contour_raw_90_volume_prct_store low_res_upper_contour_raw_95_volume_prct_store low_res_upper_contour_raw_80_linear_volume_prct_store low_res_upper_contour_raw_90_linear_volume_prct_store low_res_upper_contour_raw_95_linear_volume_prct_store'])
