@@ -3,9 +3,9 @@ function [bdryValues] = linear_interp_boundary(AC, resid_field, nSubj)
 % Interpolate values of random field to boundary of an excursion set using
 % 4 -connectivity
 % Input:
-% AC:   random field over a domain in R^3, thresholded at some value c, and then binarized.
+% AC:   random field over a domain in R^dim, thresholded at some value c, and then binarized.
 %	   	
-% resid_field: The residual field proposed in SSS we wish to bootstrap and find the maximum of along the boundary          		   			 
+% resid_field: The residual field proposed in SSS we wish to bootstrap and find the maximum of along the boundary. Array of size [dim nSubj].          		   			 
 % 
 % nSubj : number of subjects		
 %
