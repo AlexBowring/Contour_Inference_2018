@@ -1,4 +1,4 @@
-function Sim_15(nSubj,SvNm,nRlz)
+function Sim_16(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
@@ -20,7 +20,7 @@ if exist([SvNm '.mat'], 'file')
 end
 
 %------------Define parameters
-% SvNm = 'Sim_15_60_subjects_001';
+% SvNm = 'Sim_16_60_subjects_001';
 % nSubj  = 120;
 % nRlz = 300;
 
@@ -28,7 +28,7 @@ tau     = 1/sqrt(nSubj);
 nBoot   = 5000;
 dim     = [100 100 100]; 
 mag     = 3;
-rad     = 30;
+rad     = 5;
 smo     = 10;
 rimFWHM = 15;
 stdblk  = prod(dim([1 2])/2);
