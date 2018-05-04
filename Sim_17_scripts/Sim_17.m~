@@ -1,4 +1,4 @@
-function Sim_12(nSubj,SvNm,nRlz)
+function Sim_17(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
@@ -231,7 +231,9 @@ for t=1:nRlz
         %
         % Truncate to avoid edge effects
         %
-        tNoises = Noises(trnind{1},trnind{2});       
+        tNoises = Noises(trnind{1},trnind{2}); 
+        non_stationary_var = repmat(linspace(sqrt(0.5), sqrt(1,5)), dim(2), 1);
+        tNoises = tNoises*non_stationary_var;
         tImgs = Sig + tNoises; % Creates the true image of smoothed signal + smoothed noise
         observed_data(:,:,i) = tImgs;
         
