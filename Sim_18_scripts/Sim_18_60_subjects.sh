@@ -1,7 +1,7 @@
 #!/bin/bash
 #$ -S /bin/bash
 #$ -l h_vmem=4G
-#$ -l h_rt=11:59:00
+#$ -l h_rt=04:59:00
 #$ -t 1:100
 #$ -cwd
 #$ -o $HOME/log
@@ -11,5 +11,5 @@
 
 module add matlab
 
-matlab -nodisplay -nojvm -r Sim_17_240_subjects
+matlab -nodisplay -nojvm -r Sim_18_60_subjects
 

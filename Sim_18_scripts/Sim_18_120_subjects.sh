@@ -11,5 +11,5 @@
 
 module add matlab
 
-matlab -nodisplay -nojvm -r Sim_17_240_subjects
+matlab -nodisplay -nojvm -r Sim_18_120_subjects
 
