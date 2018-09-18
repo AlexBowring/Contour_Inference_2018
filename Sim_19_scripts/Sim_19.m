@@ -50,38 +50,68 @@ subset_success_vector_raw_80           = zeros(nRlz, 1);
 subset_success_vector_raw_90           = zeros(nRlz, 1);
 subset_success_vector_raw_95           = zeros(nRlz, 1);
 
+subset_success_vector_raw_80_weighted    = zeros(nRlz, 1); 
+subset_success_vector_raw_90_weighted    = zeros(nRlz, 1);
+subset_success_vector_raw_95_weighted    = zeros(nRlz, 1); 
+
 subset_success_vector_raw_80_linear    = zeros(nRlz, 1); 
 subset_success_vector_raw_90_linear    = zeros(nRlz, 1);
 subset_success_vector_raw_95_linear    = zeros(nRlz, 1); 
+
+subset_success_vector_raw_80_observed_weighted    = zeros(nRlz, 1); 
+subset_success_vector_raw_90_observed_weighted    = zeros(nRlz, 1);
+subset_success_vector_raw_95_observed_weighted    = zeros(nRlz, 1); 
 
 %- This vector stores the threshold value 'c' for each run
 threshold_raw_80_store                  = zeros(nRlz, 1);
 threshold_raw_90_store                  = zeros(nRlz, 1);
 threshold_raw_95_store                  = zeros(nRlz, 1);
 
+threshold_raw_80_weighted_store           = zeros(nRlz, 1);
+threshold_raw_90_weighted_store           = zeros(nRlz, 1);
+threshold_raw_95_weighted_store           = zeros(nRlz, 1);
+
 threshold_raw_80_linear_store           = zeros(nRlz, 1);
 threshold_raw_90_linear_store           = zeros(nRlz, 1);
 threshold_raw_95_linear_store           = zeros(nRlz, 1);
 
+threshold_raw_80_observed_weighted_store           = zeros(nRlz, 1);
+threshold_raw_90_observed_weighted_store           = zeros(nRlz, 1);
+threshold_raw_95_observed_weighted_store           = zeros(nRlz, 1);
+
 %- This vector stores the percentage volumes A^+_c/A_c, A^_c/A_c, A^-_c/A_c
-lower_contour_raw_80_volume_prct_store          = zeros(nRlz, 1);
-upper_contour_raw_80_volume_prct_store          = zeros(nRlz, 1);
-lower_contour_raw_80_linear_volume_prct_store   = zeros(nRlz, 1);
-upper_contour_raw_80_linear_volume_prct_store   = zeros(nRlz, 1);
+lower_contour_raw_80_volume_prct_store                     = zeros(nRlz, 1);
+upper_contour_raw_80_volume_prct_store                     = zeros(nRlz, 1);
+lower_contour_raw_80_weighted_volume_prct_store            = zeros(nRlz, 1);
+upper_contour_raw_80_weighted_volume_prct_store            = zeros(nRlz, 1);
+lower_contour_raw_80_linear_volume_prct_store              = zeros(nRlz, 1);
+upper_contour_raw_80_linear_volume_prct_store              = zeros(nRlz, 1);
+lower_contour_raw_80_observed_weighted_volume_prct_store   = zeros(nRlz, 1);
+upper_contour_raw_80_observed_weighted_volume_prct_store   = zeros(nRlz, 1);
 
-lower_contour_raw_90_volume_prct_store          = zeros(nRlz, 1);
-upper_contour_raw_90_volume_prct_store          = zeros(nRlz, 1);
-lower_contour_raw_90_linear_volume_prct_store   = zeros(nRlz, 1);
-upper_contour_raw_90_linear_volume_prct_store   = zeros(nRlz, 1);
+lower_contour_raw_90_volume_prct_store                     = zeros(nRlz, 1);
+upper_contour_raw_90_volume_prct_store                     = zeros(nRlz, 1);
+lower_contour_raw_90_weighted_volume_prct_store            = zeros(nRlz, 1);
+upper_contour_raw_90_weighted_volume_prct_store            = zeros(nRlz, 1);
+lower_contour_raw_90_linear_volume_prct_store              = zeros(nRlz, 1);
+upper_contour_raw_90_linear_volume_prct_store              = zeros(nRlz, 1);
+lower_contour_raw_90_observed_weighted_volume_prct_store   = zeros(nRlz, 1);
+upper_contour_raw_90_observed_weighted_volume_prct_store   = zeros(nRlz, 1);
 
-lower_contour_raw_95_volume_prct_store          = zeros(nRlz, 1);
-upper_contour_raw_95_volume_prct_store          = zeros(nRlz, 1);
-lower_contour_raw_95_linear_volume_prct_store   = zeros(nRlz, 1);
-upper_contour_raw_95_linear_volume_prct_store   = zeros(nRlz, 1);
+lower_contour_raw_95_volume_prct_store                     = zeros(nRlz, 1);
+upper_contour_raw_95_volume_prct_store                     = zeros(nRlz, 1);
+lower_contour_raw_95_weighted_volume_prct_store            = zeros(nRlz, 1);
+upper_contour_raw_95_weighted_volume_prct_store            = zeros(nRlz, 1);
+lower_contour_raw_95_linear_volume_prct_store              = zeros(nRlz, 1);
+upper_contour_raw_95_linear_volume_prct_store              = zeros(nRlz, 1);
+lower_contour_raw_95_observed_weighted_volume_prct_store   = zeros(nRlz, 1);
+upper_contour_raw_95_observed_weighted_volume_prct_store   = zeros(nRlz, 1);
 
 % This stores the vector SupG for each run
-supG_raw_store         = zeros(nBoot, nRlz);
-supG_raw_linear_store  = zeros(nBoot, nRlz);
+supG_raw_store                   = zeros(nBoot, nRlz);
+supG_raw_weighted_store          = zeros(nBoot, nRlz);
+supG_raw_linear_store            = zeros(nBoot, nRlz);
+supG_raw_observed_weighted_store = zeros(nBoot, nRlz);
 
 %-These matrices store all the sets of interest during the bootstrap
 % method for all levels of smoothing
@@ -89,28 +119,52 @@ lower_contour_raw_80_store                       = zeros([nRlz dim]);
 upper_contour_raw_80_store                       = zeros([nRlz dim]);
 upper_subset_mid_raw_80_store                    = zeros([nRlz dim]);
 mid_subset_lower_raw_80_store                    = zeros([nRlz dim]);
+lower_contour_raw_80_weighted_store              = zeros([nRlz dim]);
+upper_contour_raw_80_weighted_store              = zeros([nRlz dim]);
+upper_subset_mid_raw_80_weighted_store           = zeros([nRlz dim]);
+mid_subset_lower_raw_80_weighted_store           = zeros([nRlz dim]);
 lower_contour_raw_80_linear_store                = zeros([nRlz dim]);
 upper_contour_raw_80_linear_store                = zeros([nRlz dim]);
 upper_subset_mid_raw_80_linear_store             = zeros([nRlz dim]);
 mid_subset_lower_raw_80_linear_store             = zeros([nRlz dim]);
+lower_contour_raw_80_observed_weighted_store     = zeros([nRlz dim]);
+upper_contour_raw_80_observed_weighted_store     = zeros([nRlz dim]);
+upper_subset_mid_raw_80_observed_weighted_store  = zeros([nRlz dim]);
+mid_subset_lower_raw_80_observed_weighted_store  = zeros([nRlz dim]);
 
 lower_contour_raw_90_store                       = zeros([nRlz dim]);
 upper_contour_raw_90_store                       = zeros([nRlz dim]);
 upper_subset_mid_raw_90_store                    = zeros([nRlz dim]);
 mid_subset_lower_raw_90_store                    = zeros([nRlz dim]);
+lower_contour_raw_90_weighted_store              = zeros([nRlz dim]);
+upper_contour_raw_90_weighted_store              = zeros([nRlz dim]);
+upper_subset_mid_raw_90_weighted_store           = zeros([nRlz dim]);
+mid_subset_lower_raw_90_weighted_store           = zeros([nRlz dim]);
 lower_contour_raw_90_linear_store                = zeros([nRlz dim]);
 upper_contour_raw_90_linear_store                = zeros([nRlz dim]);
 upper_subset_mid_raw_90_linear_store             = zeros([nRlz dim]);
 mid_subset_lower_raw_90_linear_store             = zeros([nRlz dim]);
+lower_contour_raw_90_observed_weighted_store     = zeros([nRlz dim]);
+upper_contour_raw_90_observed_weighted_store     = zeros([nRlz dim]);
+upper_subset_mid_raw_90_observed_weighted_store  = zeros([nRlz dim]);
+mid_subset_lower_raw_90_observed_weighted_store  = zeros([nRlz dim]);
 
 lower_contour_raw_95_store                       = zeros([nRlz dim]);
 upper_contour_raw_95_store                       = zeros([nRlz dim]);
 upper_subset_mid_raw_95_store                    = zeros([nRlz dim]);
 mid_subset_lower_raw_95_store                    = zeros([nRlz dim]);
+lower_contour_raw_95_weighted_store              = zeros([nRlz dim]);
+upper_contour_raw_95_weighted_store              = zeros([nRlz dim]);
+upper_subset_mid_raw_95_weighted_store           = zeros([nRlz dim]);
+mid_subset_lower_raw_95_weighted_store           = zeros([nRlz dim]);
 lower_contour_raw_95_linear_store                = zeros([nRlz dim]);
 upper_contour_raw_95_linear_store                = zeros([nRlz dim]);
 upper_subset_mid_raw_95_linear_store             = zeros([nRlz dim]);
 mid_subset_lower_raw_95_linear_store             = zeros([nRlz dim]);
+lower_contour_raw_95_observed_weighted_store     = zeros([nRlz dim]);
+upper_contour_raw_95_observed_weighted_store     = zeros([nRlz dim]);
+upper_subset_mid_raw_95_observed_weighted_store  = zeros([nRlz dim]);
+mid_subset_lower_raw_95_observed_weighted_store  = zeros([nRlz dim]);
 
 supG_raw                         = zeros(nBoot,1);
 supG_raw_weighted                = zeros(nBoot,1);
@@ -191,11 +245,9 @@ for t=1:nRlz
         %
         % Truncate to avoid edge effects
         %
-        tNoises = Noises(trnind{1},trnind{2}); 
-        non_stationary_var = repmat(linspace(sqrt(0.5), sqrt(1.5)), dim(2), 1);
-        tNoises = tNoises.*non_stationary_var;
-        tImgs = tNoises; % Creates the true image of smoothed signal + smoothed noise
-        observed_data(:,:,i) = Sig + tImgs;
+        tNoises = Noises(trnind{1},trnind{2});       
+        tImgs = Sig + tNoises; % Creates the true image of smoothed signal + smoothed noise
+        observed_data(:,:,i) = tImgs;
         
       end %========== Loop i (subjects)
 
@@ -279,12 +331,12 @@ for t=1:nRlz
           observed_dshift_boundary_values = abs((resid_field(observed_dshift) + resid_field(observed_dshift([2:dim(1) 1],:)))/2);
           supG_raw_linear(k)              = max([observed_lshift_boundary_values; observed_rshift_boundary_values; observed_ushift_boundary_values; observed_dshift_boundary_values]);
           
-          % Calculating the maximum over the linear true weighted boundary edges
-          lshift_weighted_boundary_values = abs(lshift_w1.*resid_field(lshift) + lshift_w2.*resid_field(lshift(:,[dim(2) 1:dim(2)-1])));
-          rshift_weighted_boundary_values = abs(rshift_w1.*resid_field(rshift) + rshift_w2.*resid_field(rshift(:,[2:dim(2) 1])));
-          ushift_weighted_boundary_values = abs(ushift_w1.*resid_field(ushift) + ushift_w2.*resid_field(ushift([dim(1) 1:dim(1)-1],:)));
-          dshift_weighted_boundary_values = abs(dshift_w1.*resid_field(dshift) + dshift_w2.*resid_field(dshift([2:dim(1) 1],:)));
-          supG_raw_observed_weighted(k)            = max([lshift_weighted_boundary_values; rshift_weighted_boundary_values; ushift_weighted_boundary_values; dshift_weighted_boundary_values]);
+          % Calculating the maximum over the linear observed weighted boundary edges
+          observed_lshift_weighted_boundary_values = abs(observed_lshift_w1.*resid_field(lshift) + observed_lshift_w2.*resid_field(lshift(:,[dim(2) 1:dim(2)-1])));
+          observed_rshift_weighted_boundary_values = abs(observed_rshift_w1.*resid_field(rshift) + observed_rshift_w2.*resid_field(rshift(:,[2:dim(2) 1])));
+          observed_ushift_weighted_boundary_values = abs(observed_ushift_w1.*resid_field(ushift) + observed_ushift_w2.*resid_field(ushift([dim(1) 1:dim(1)-1],:)));
+          observed_dshift_weighted_boundary_values = abs(observed_dshift_w1.*resid_field(dshift) + observed_dshift_w2.*resid_field(dshift([2:dim(1) 1],:)));
+          supG_raw_observed_weighted(k)            = max([observed_lshift_weighted_boundary_values; observed_rshift_weighted_boundary_values; observed_ushift_weighted_boundary_values; observed_dshift_weighted_boundary_values]);
       end
       
     middle_contour                = AC;
@@ -322,6 +374,38 @@ for t=1:nRlz
     lower_on_mid_raw_95              = middle_contour.*lower_contour_raw_95;
     upper_subset_mid_raw_95          = upper_contour_raw_95 - mid_on_upper_raw_95;
     mid_subset_lower_raw_95          = middle_contour - lower_on_mid_raw_95;
+    
+    % Weighted linear Boundary
+    supGa_raw_80_weighted                     = prctile(supG_raw_weighted, 80);
+    supGa_raw_90_weighted                     = prctile(supG_raw_weighted, 90);
+    supGa_raw_95_weighted                     = prctile(supG_raw_weighted, 95);
+       
+    lower_contour_raw_80_weighted             = observed_mean >= thr - supGa_raw_80_weighted*tau*observed_std;
+    upper_contour_raw_80_weighted             = observed_mean >= thr + supGa_raw_80_weighted*tau*observed_std;
+    lower_contour_raw_80_weighted_volume_prct = sum(lower_contour_raw_80_weighted(:))/middle_contour_volume;
+    upper_contour_raw_80_weighted_volume_prct = sum(upper_contour_raw_80_weighted(:))/middle_contour_volume;
+    mid_on_upper_raw_80_weighted              = upper_contour_raw_80_weighted.*middle_contour;
+    lower_on_mid_raw_80_weighted              = middle_contour.*lower_contour_raw_80_weighted;
+    upper_subset_mid_raw_80_weighted          = upper_contour_raw_80_weighted - mid_on_upper_raw_80_weighted;
+    mid_subset_lower_raw_80_weighted          = middle_contour - lower_on_mid_raw_80_weighted;
+    
+    lower_contour_raw_90_weighted             = observed_mean >= thr - supGa_raw_90_weighted*tau*observed_std;
+    upper_contour_raw_90_weighted             = observed_mean >= thr + supGa_raw_90_weighted*tau*observed_std;
+    lower_contour_raw_90_weighted_volume_prct = sum(lower_contour_raw_90_weighted(:))/middle_contour_volume;
+    upper_contour_raw_90_weighted_volume_prct = sum(upper_contour_raw_90_weighted(:))/middle_contour_volume;
+    mid_on_upper_raw_90_weighted              = upper_contour_raw_90_weighted.*middle_contour;
+    lower_on_mid_raw_90_weighted              = middle_contour.*lower_contour_raw_90_weighted;
+    upper_subset_mid_raw_90_weighted          = upper_contour_raw_90_weighted - mid_on_upper_raw_90_weighted;
+    mid_subset_lower_raw_90_weighted          = middle_contour - lower_on_mid_raw_90_weighted;    
+    
+    lower_contour_raw_95_weighted             = observed_mean >= thr - supGa_raw_95_weighted*tau*observed_std;
+    upper_contour_raw_95_weighted             = observed_mean >= thr + supGa_raw_95_weighted*tau*observed_std;
+    lower_contour_raw_95_weighted_volume_prct = sum(lower_contour_raw_95_weighted(:))/middle_contour_volume;
+    upper_contour_raw_95_weighted_volume_prct = sum(upper_contour_raw_95_weighted(:))/middle_contour_volume;
+    mid_on_upper_raw_95_weighted              = upper_contour_raw_95_weighted.*middle_contour;
+    lower_on_mid_raw_95_weighted              = middle_contour.*lower_contour_raw_95_weighted;
+    upper_subset_mid_raw_95_weighted          = upper_contour_raw_95_weighted - mid_on_upper_raw_95_weighted;
+    mid_subset_lower_raw_95_weighted          = middle_contour - lower_on_mid_raw_95_weighted;
 
     % Linear Boundary
     supGa_raw_80_linear                     = prctile(supG_raw_linear, 80);
@@ -354,6 +438,38 @@ for t=1:nRlz
     lower_on_mid_raw_95_linear              = middle_contour.*lower_contour_raw_95_linear;
     upper_subset_mid_raw_95_linear          = upper_contour_raw_95_linear - mid_on_upper_raw_95_linear;
     mid_subset_lower_raw_95_linear          = middle_contour - lower_on_mid_raw_95_linear;
+    
+    % Observed Weighted Linear Boundary
+    supGa_raw_80_observed_weighted                     = prctile(supG_raw_observed_weighted, 80);
+    supGa_raw_90_observed_weighted                     = prctile(supG_raw_observed_weighted, 90);
+    supGa_raw_95_observed_weighted                     = prctile(supG_raw_observed_weighted, 95);
+   
+    lower_contour_raw_80_observed_weighted             = observed_mean >= thr - supGa_raw_80_observed_weighted*tau*observed_std;
+    upper_contour_raw_80_observed_weighted             = observed_mean >= thr + supGa_raw_80_observed_weighted*tau*observed_std;
+    lower_contour_raw_80_observed_weighted_volume_prct = sum(lower_contour_raw_80_observed_weighted(:))/middle_contour_volume;
+    upper_contour_raw_80_observed_weighted_volume_prct = sum(upper_contour_raw_80_observed_weighted(:))/middle_contour_volume;
+    mid_on_upper_raw_80_observed_weighted              = upper_contour_raw_80_observed_weighted.*middle_contour;
+    lower_on_mid_raw_80_observed_weighted              = middle_contour.*lower_contour_raw_80_observed_weighted;
+    upper_subset_mid_raw_80_observed_weighted          = upper_contour_raw_80_observed_weighted - mid_on_upper_raw_80_observed_weighted;
+    mid_subset_lower_raw_80_observed_weighted          = middle_contour - lower_on_mid_raw_80_observed_weighted;
+    
+    lower_contour_raw_90_observed_weighted             = observed_mean >= thr - supGa_raw_90_observed_weighted*tau*observed_std;
+    upper_contour_raw_90_observed_weighted             = observed_mean >= thr + supGa_raw_90_observed_weighted*tau*observed_std;
+    lower_contour_raw_90_observed_weighted_volume_prct = sum(lower_contour_raw_90_observed_weighted(:))/middle_contour_volume;
+    upper_contour_raw_90_observed_weighted_volume_prct = sum(upper_contour_raw_90_observed_weighted(:))/middle_contour_volume;
+    mid_on_upper_raw_90_observed_weighted              = upper_contour_raw_90_observed_weighted.*middle_contour;
+    lower_on_mid_raw_90_observed_weighted              = middle_contour.*lower_contour_raw_90_observed_weighted;
+    upper_subset_mid_raw_90_observed_weighted          = upper_contour_raw_90_observed_weighted - mid_on_upper_raw_90_observed_weighted;
+    mid_subset_lower_raw_90_observed_weighted          = middle_contour - lower_on_mid_raw_90_observed_weighted;    
+    
+    lower_contour_raw_95_observed_weighted             = observed_mean >= thr - supGa_raw_95_observed_weighted*tau*observed_std;
+    upper_contour_raw_95_observed_weighted             = observed_mean >= thr + supGa_raw_95_observed_weighted*tau*observed_std;
+    lower_contour_raw_95_observed_weighted_volume_prct = sum(lower_contour_raw_95_observed_weighted(:))/middle_contour_volume;
+    upper_contour_raw_95_observed_weighted_volume_prct = sum(upper_contour_raw_95_observed_weighted(:))/middle_contour_volume;
+    mid_on_upper_raw_95_observed_weighted              = upper_contour_raw_95_observed_weighted.*middle_contour;
+    lower_on_mid_raw_95_observed_weighted              = middle_contour.*lower_contour_raw_95_observed_weighted;
+    upper_subset_mid_raw_95_observed_weighted          = upper_contour_raw_95_observed_weighted - mid_on_upper_raw_95_observed_weighted;
+    mid_subset_lower_raw_95_observed_weighted          = middle_contour - lower_on_mid_raw_95_observed_weighted;
 
     %
     % Storing all variables of interest
@@ -382,8 +498,34 @@ for t=1:nRlz
     mid_subset_lower_raw_95_store(t,:,:)                   = mid_subset_lower_raw_95;
     lower_contour_raw_95_volume_prct_store(t)              = lower_contour_raw_95_volume_prct;
     upper_contour_raw_95_volume_prct_store(t)              = upper_contour_raw_95_volume_prct;
-    
 
+    
+    supG_raw_weighted_store(:,t)                                    = supG_raw_weighted;
+    threshold_raw_80_weighted_store(t)                              = supGa_raw_80_weighted;
+    lower_contour_raw_80_weighted_store(t,:,:)                      = lower_contour_raw_80_weighted;
+    upper_contour_raw_80_weighted_store(t,:,:)                      = upper_contour_raw_80_weighted;
+    upper_subset_mid_raw_80_weighted_store(t,:,:)                   = upper_subset_mid_raw_80_weighted;
+    mid_subset_lower_raw_80_weighted_store(t,:,:)                   = mid_subset_lower_raw_80_weighted;
+    lower_contour_raw_80_weighted_volume_prct_store(t)              = lower_contour_raw_80_weighted_volume_prct;
+    upper_contour_raw_80_weighted_volume_prct_store(t)              = upper_contour_raw_80_weighted_volume_prct;
+ 
+    threshold_raw_90_weighted_store(t)                              = supGa_raw_90_weighted;
+    lower_contour_raw_90_weighted_store(t,:,:)                      = lower_contour_raw_90_weighted;
+    upper_contour_raw_90_weighted_store(t,:,:)                      = upper_contour_raw_90_weighted;
+    upper_subset_mid_raw_90_weighted_store(t,:,:)                   = upper_subset_mid_raw_90_weighted;
+    mid_subset_lower_raw_90_weighted_store(t,:,:)                   = mid_subset_lower_raw_90_weighted;
+    lower_contour_raw_90_weighted_volume_prct_store(t)              = lower_contour_raw_90_weighted_volume_prct;
+    upper_contour_raw_90_weighted_volume_prct_store(t)              = upper_contour_raw_90_weighted_volume_prct;
+
+    threshold_raw_95_weighted_store(t)                              = supGa_raw_95_weighted;
+    lower_contour_raw_95_weighted_store(t,:,:)                      = lower_contour_raw_95_weighted;
+    upper_contour_raw_95_weighted_store(t,:,:)                      = upper_contour_raw_95_weighted;
+    upper_subset_mid_raw_95_weighted_store(t,:,:)                   = upper_subset_mid_raw_95_weighted;
+    mid_subset_lower_raw_95_weighted_store(t,:,:)                   = mid_subset_lower_raw_95_weighted;
+    lower_contour_raw_95_weighted_volume_prct_store(t)              = lower_contour_raw_95_weighted_volume_prct;
+    upper_contour_raw_95_weighted_volume_prct_store(t)              = upper_contour_raw_95_weighted_volume_prct;
+
+    
     supG_raw_linear_store(:,t)                                    = supG_raw_linear;
     threshold_raw_80_linear_store(t)                              = supGa_raw_80_linear;
     lower_contour_raw_80_linear_store(t,:,:)                      = lower_contour_raw_80_linear;
@@ -408,7 +550,32 @@ for t=1:nRlz
     mid_subset_lower_raw_95_linear_store(t,:,:)                   = mid_subset_lower_raw_95_linear;
     lower_contour_raw_95_linear_volume_prct_store(t)              = lower_contour_raw_95_linear_volume_prct;
     upper_contour_raw_95_linear_volume_prct_store(t)              = upper_contour_raw_95_linear_volume_prct;
+
     
+    supG_raw_observed_weighted_store(:,t)                                    = supG_raw_observed_weighted;
+    threshold_raw_80_observed_weighted_store(t)                              = supGa_raw_80_observed_weighted;
+    lower_contour_raw_80_observed_weighted_store(t,:,:)                      = lower_contour_raw_80_observed_weighted;
+    upper_contour_raw_80_observed_weighted_store(t,:,:)                      = upper_contour_raw_80_observed_weighted;
+    upper_subset_mid_raw_80_observed_weighted_store(t,:,:)                   = upper_subset_mid_raw_80_observed_weighted;
+    mid_subset_lower_raw_80_observed_weighted_store(t,:,:)                   = mid_subset_lower_raw_80_observed_weighted;
+    lower_contour_raw_80_observed_weighted_volume_prct_store(t)              = lower_contour_raw_80_observed_weighted_volume_prct;
+    upper_contour_raw_80_observed_weighted_volume_prct_store(t)              = upper_contour_raw_80_observed_weighted_volume_prct;
+ 
+    threshold_raw_90_observed_weighted_store(t)                              = supGa_raw_90_observed_weighted;
+    lower_contour_raw_90_observed_weighted_store(t,:,:)                      = lower_contour_raw_90_observed_weighted;
+    upper_contour_raw_90_observed_weighted_store(t,:,:)                      = upper_contour_raw_90_observed_weighted;
+    upper_subset_mid_raw_90_observed_weighted_store(t,:,:)                   = upper_subset_mid_raw_90_observed_weighted;
+    mid_subset_lower_raw_90_observed_weighted_store(t,:,:)                   = mid_subset_lower_raw_90_observed_weighted;
+    lower_contour_raw_90_observed_weighted_volume_prct_store(t)              = lower_contour_raw_90_observed_weighted_volume_prct;
+    upper_contour_raw_90_observed_weighted_volume_prct_store(t)              = upper_contour_raw_90_observed_weighted_volume_prct;
+
+    threshold_raw_95_observed_weighted_store(t)                              = supGa_raw_95_observed_weighted;
+    lower_contour_raw_95_observed_weighted_store(t,:,:)                      = lower_contour_raw_95_observed_weighted;
+    upper_contour_raw_95_observed_weighted_store(t,:,:)                      = upper_contour_raw_95_observed_weighted;
+    upper_subset_mid_raw_95_observed_weighted_store(t,:,:)                   = upper_subset_mid_raw_95_observed_weighted;
+    mid_subset_lower_raw_95_observed_weighted_store(t,:,:)                   = mid_subset_lower_raw_95_observed_weighted;
+    lower_contour_raw_95_observed_weighted_volume_prct_store(t)              = lower_contour_raw_95_observed_weighted_volume_prct;
+    upper_contour_raw_95_observed_weighted_volume_prct_store(t)              = upper_contour_raw_95_observed_weighted_volume_prct;
     
     if sum(upper_subset_mid_raw_80(:))+sum(mid_subset_lower_raw_80(:))==0
       subset_success_vector_raw_80(t) = 1; 
@@ -434,6 +601,32 @@ for t=1:nRlz
       fprintf('raw nominal 95 true boundary failure! \n');
     end 
 
+    
+    if sum(upper_subset_mid_raw_80_weighted(:))+sum(mid_subset_lower_raw_80_weighted(:))==0
+      subset_success_vector_raw_80_weighted(t) = 1; 
+      fprintf('raw nominal 90 weighted boundary success! \n');
+    else 
+      subset_success_vector_raw_80_weighted(t) = 0; 
+      fprintf('raw nominal 90 weighted boundary failure! \n');
+    end 
+
+    if sum(upper_subset_mid_raw_90_weighted(:))+sum(mid_subset_lower_raw_90_weighted(:))==0
+      subset_success_vector_raw_90_weighted(t) = 1; 
+      fprintf('raw nominal 90 weighted boundary success! \n');
+    else 
+      subset_success_vector_raw_90_weighted(t) = 0; 
+      fprintf('raw nominal 90 weighted boundary failure! \n');
+    end 
+
+    if sum(upper_subset_mid_raw_95_weighted(:))+sum(mid_subset_lower_raw_95_weighted(:))==0
+      subset_success_vector_raw_95_weighted(t) = 1; 
+      fprintf('raw nominal 95 weighted boundary success! \n');
+    else 
+      subset_success_vector_raw_95_weighted(t) = 0; 
+      fprintf('raw nominal 95 weighted boundary failure! \n');
+    end
+    
+    
     if sum(upper_subset_mid_raw_80_linear(:))+sum(mid_subset_lower_raw_80_linear(:))==0
       subset_success_vector_raw_80_linear(t) = 1; 
       fprintf('raw nominal 90 linear boundary success! \n');
@@ -456,7 +649,32 @@ for t=1:nRlz
     else 
       subset_success_vector_raw_95_linear(t) = 0; 
       fprintf('raw nominal 95 linear boundary failure! \n');
-    end     
+    end
+    
+
+    if sum(upper_subset_mid_raw_80_observed_weighted(:))+sum(mid_subset_lower_raw_80_observed_weighted(:))==0
+      subset_success_vector_raw_80_observed_weighted(t) = 1; 
+      fprintf('raw nominal 90 observed_weighted boundary success! \n');
+    else 
+      subset_success_vector_raw_80_observed_weighted(t) = 0; 
+      fprintf('raw nominal 90 observed_weighted boundary failure! \n');
+    end 
+
+    if sum(upper_subset_mid_raw_90_observed_weighted(:))+sum(mid_subset_lower_raw_90_observed_weighted(:))==0
+      subset_success_vector_raw_90_observed_weighted(t) = 1; 
+      fprintf('raw nominal 90 observed_weighted boundary success! \n');
+    else 
+      subset_success_vector_raw_90_observed_weighted(t) = 0; 
+      fprintf('raw nominal 90 observed_weighted boundary failure! \n');
+    end 
+
+    if sum(upper_subset_mid_raw_95_observed_weighted(:))+sum(mid_subset_lower_raw_95_observed_weighted(:))==0
+      subset_success_vector_raw_95_observed_weighted(t) = 1; 
+      fprintf('raw nominal 95 observed_weighted boundary success! \n');
+    else 
+      subset_success_vector_raw_95_observed_weighted(t) = 0; 
+      fprintf('raw nominal 95 observed_weighted boundary failure! \n');
+    end
 
 end
 
@@ -464,20 +682,28 @@ percentage_success_vector_raw_80                         = mean(subset_success_v
 percentage_success_vector_raw_90                         = mean(subset_success_vector_raw_90, 1);
 percentage_success_vector_raw_95                         = mean(subset_success_vector_raw_95, 1);
 
+percentage_success_vector_raw_80_weighted                = mean(subset_success_vector_raw_80_weighted, 1);
+percentage_success_vector_raw_90_weighted                = mean(subset_success_vector_raw_90_weighted, 1);
+percentage_success_vector_raw_95_weighted                = mean(subset_success_vector_raw_95_weighted, 1);
+
 percentage_success_vector_raw_80_linear                  = mean(subset_success_vector_raw_80_linear, 1);
 percentage_success_vector_raw_90_linear                  = mean(subset_success_vector_raw_90_linear, 1);
 percentage_success_vector_raw_95_linear                  = mean(subset_success_vector_raw_95_linear, 1);
 
+percentage_success_vector_raw_80_observed_weighted       = mean(subset_success_vector_raw_80_observed_weighted, 1);
+percentage_success_vector_raw_90_observed_weighted       = mean(subset_success_vector_raw_90_observed_weighted, 1);
+percentage_success_vector_raw_95_observed_weighted       = mean(subset_success_vector_raw_95_observed_weighted, 1);
+
 
 eval(['save ' SvNm ' nSubj nRlz dim smo mag rimFWHM thr nBoot '... 
-      'threshold_raw_80_store threshold_raw_90_store threshold_raw_95_store threshold_raw_80_ero_store threshold_raw_90_ero_store threshold_raw_95_ero_store threshold_raw_80_dil_store threshold_raw_90_dil_store threshold_raw_95_dil_store threshold_raw_80_ero_dil_store threshold_raw_90_ero_dil_store threshold_raw_95_ero_dil_store threshold_raw_80_linear_store threshold_raw_90_linear_store threshold_raw_95_linear_store '...
-      'lower_contour_raw_80_store lower_contour_raw_90_store lower_contour_raw_95_store lower_contour_raw_80_ero_store lower_contour_raw_90_ero_store lower_contour_raw_95_ero_store lower_contour_raw_80_dil_store lower_contour_raw_90_dil_store lower_contour_raw_95_dil_store lower_contour_raw_80_ero_dil_store lower_contour_raw_90_ero_dil_store lower_contour_raw_95_ero_dil_store lower_contour_raw_80_linear_store lower_contour_raw_90_linear_store lower_contour_raw_95_linear_store '...
-      'upper_contour_raw_80_store upper_contour_raw_90_store upper_contour_raw_95_store upper_contour_raw_80_ero_store upper_contour_raw_90_ero_store upper_contour_raw_95_ero_store upper_contour_raw_80_dil_store upper_contour_raw_90_dil_store upper_contour_raw_95_dil_store upper_contour_raw_80_ero_dil_store upper_contour_raw_90_ero_dil_store upper_contour_raw_95_ero_dil_store upper_contour_raw_80_linear_store upper_contour_raw_90_linear_store upper_contour_raw_95_linear_store '...
-      'upper_subset_mid_raw_80_store upper_subset_mid_raw_90_store upper_subset_mid_raw_95_store upper_subset_mid_raw_80_ero_store upper_subset_mid_raw_90_ero_store upper_subset_mid_raw_95_ero_store upper_subset_mid_raw_80_dil_store upper_subset_mid_raw_90_dil_store upper_subset_mid_raw_95_dil_store upper_subset_mid_raw_80_ero_dil_store upper_subset_mid_raw_90_ero_dil_store upper_subset_mid_raw_95_ero_dil_store upper_subset_mid_raw_80_linear_store upper_subset_mid_raw_90_linear_store upper_subset_mid_raw_95_linear_store '...
-      'mid_subset_lower_raw_80_store mid_subset_lower_raw_90_store mid_subset_lower_raw_95_store mid_subset_lower_raw_80_ero_store mid_subset_lower_raw_90_ero_store mid_subset_lower_raw_95_ero_store mid_subset_lower_raw_80_dil_store mid_subset_lower_raw_90_dil_store mid_subset_lower_raw_95_dil_store mid_subset_lower_raw_80_ero_dil_store mid_subset_lower_raw_90_ero_dil_store mid_subset_lower_raw_95_ero_dil_store mid_subset_lower_raw_80_linear_store mid_subset_lower_raw_90_linear_store mid_subset_lower_raw_95_linear_store '...
-      'subset_success_vector_raw_80 subset_success_vector_raw_90 subset_success_vector_raw_95 subset_success_vector_raw_80_ero subset_success_vector_raw_90_ero subset_success_vector_raw_95_ero subset_success_vector_raw_80_dil subset_success_vector_raw_90_dil subset_success_vector_raw_95_dil subset_success_vector_raw_80_ero_dil subset_success_vector_raw_90_ero_dil subset_success_vector_raw_95_ero_dil subset_success_vector_raw_80_linear subset_success_vector_raw_90_linear subset_success_vector_raw_95_linear '...
-      'percentage_success_vector_raw_80 percentage_success_vector_raw_90 percentage_success_vector_raw_95 percentage_success_vector_raw_80_ero percentage_success_vector_raw_90_ero percentage_success_vector_raw_95_ero percentage_success_vector_raw_80_dil percentage_success_vector_raw_90_dil percentage_success_vector_raw_95_dil percentage_success_vector_raw_80_ero_dil percentage_success_vector_raw_90_ero_dil percentage_success_vector_raw_95_ero_dil percentage_success_vector_raw_80_linear percentage_success_vector_raw_90_linear percentage_success_vector_raw_95_linear '...
-      'supG_raw_store supG_raw_ero_store supG_raw_dil_store supG_raw_ero_dil_store supG_raw_linear_store '...
+      'threshold_raw_80_store threshold_raw_90_store threshold_raw_95_store threshold_raw_80_weighted_store threshold_raw_90_weighted_store threshold_raw_95_weighted_store threshold_raw_80_linear_store threshold_raw_90_linear_store threshold_raw_95_linear_store threshold_raw_80_observed_weighted_store threshold_raw_90_observed_weighted_store threshold_raw_95_observed_weighted_store '...
+      'lower_contour_raw_80_store lower_contour_raw_90_store lower_contour_raw_95_store lower_contour_raw_80_weighted_store lower_contour_raw_90_weighted_store lower_contour_raw_95_weighted_store lower_contour_raw_80_linear_store lower_contour_raw_90_linear_store lower_contour_raw_95_linear_store lower_contour_raw_80_observed_weighted_store lower_contour_raw_90_observed_weighted_store lower_contour_raw_95_observed_weighted_store '...
+      'upper_contour_raw_80_store upper_contour_raw_90_store upper_contour_raw_95_store upper_contour_raw_80_weighted_store upper_contour_raw_90_weighted_store upper_contour_raw_95_weighted_store upper_contour_raw_80_linear_store upper_contour_raw_90_linear_store upper_contour_raw_95_linear_store upper_contour_raw_80_observed_weighted_store upper_contour_raw_90_observed_weighted_store upper_contour_raw_95_observed_weighted_store '...
+      'upper_subset_mid_raw_80_store upper_subset_mid_raw_90_store upper_subset_mid_raw_95_store upper_subset_mid_raw_80_weighted_store upper_subset_mid_raw_90_weighted_store upper_subset_mid_raw_95_weighted_store upper_subset_mid_raw_80_linear_store upper_subset_mid_raw_90_linear_store upper_subset_mid_raw_95_linear_store upper_subset_mid_raw_80_observed_weighted_store upper_subset_mid_raw_90_observed_weighted_store upper_subset_mid_raw_95_observed_weighted_store '...
+      'mid_subset_lower_raw_80_store mid_subset_lower_raw_90_store mid_subset_lower_raw_95_store mid_subset_lower_raw_80_weighted_store mid_subset_lower_raw_90_weighted_store mid_subset_lower_raw_95_weighted_store mid_subset_lower_raw_80_linear_store mid_subset_lower_raw_90_linear_store mid_subset_lower_raw_95_linear_store mid_subset_lower_raw_80_observed_weighted_store mid_subset_lower_raw_90_observed_weighted_store mid_subset_lower_raw_95_observed_weighted_store '...
+      'subset_success_vector_raw_80 subset_success_vector_raw_90 subset_success_vector_raw_95 subset_success_vector_raw_80_weighted subset_success_vector_raw_90_weighted subset_success_vector_raw_95_weighted subset_success_vector_raw_80_linear subset_success_vector_raw_90_linear subset_success_vector_raw_95_linear subset_success_vector_raw_80_observed_weighted subset_success_vector_raw_90_observed_weighted subset_success_vector_raw_95_observed_weighted '...
+      'percentage_success_vector_raw_80 percentage_success_vector_raw_90 percentage_success_vector_raw_95 percentage_success_vector_raw_80_weighted percentage_success_vector_raw_90_weighted percentage_success_vector_raw_95_weighted percentage_success_vector_raw_80_linear percentage_success_vector_raw_90_linear percentage_success_vector_raw_95_linear percentage_success_vector_raw_80_observed_weighted percentage_success_vector_raw_90_observed_weighted percentage_success_vector_raw_95_observed_weighted '...
+      'supG_raw_store supG_raw_weighted_store supG_raw_linear_store supG_raw_observed_weighted_store'...
       'middle_contour_volume observed_AC_volume '...
-      'lower_contour_raw_80_volume_prct_store lower_contour_raw_90_volume_prct_store lower_contour_raw_95_volume_prct_store lower_contour_raw_80_ero_volume_prct_store lower_contour_raw_90_ero_volume_prct_store lower_contour_raw_95_ero_volume_prct_store lower_contour_raw_80_dil_volume_prct_store lower_contour_raw_90_dil_volume_prct_store lower_contour_raw_95_dil_volume_prct_store lower_contour_raw_80_ero_dil_volume_prct_store lower_contour_raw_90_ero_dil_volume_prct_store lower_contour_raw_95_ero_dil_volume_prct_store lower_contour_raw_80_linear_volume_prct_store lower_contour_raw_90_linear_volume_prct_store lower_contour_raw_95_linear_volume_prct_store '...
-      'upper_contour_raw_80_volume_prct_store upper_contour_raw_90_volume_prct_store upper_contour_raw_95_volume_prct_store upper_contour_raw_80_ero_volume_prct_store upper_contour_raw_90_ero_volume_prct_store upper_contour_raw_95_ero_volume_prct_store upper_contour_raw_80_dil_volume_prct_store upper_contour_raw_90_dil_volume_prct_store upper_contour_raw_95_dil_volume_prct_store upper_contour_raw_80_ero_dil_volume_prct_store upper_contour_raw_90_ero_dil_volume_prct_store upper_contour_raw_95_ero_dil_volume_prct_store upper_contour_raw_80_linear_volume_prct_store upper_contour_raw_90_linear_volume_prct_store upper_contour_raw_95_linear_volume_prct_store'])
+      'lower_contour_raw_80_volume_prct_store lower_contour_raw_90_volume_prct_store lower_contour_raw_95_volume_prct_store lower_contour_raw_80_weighted_volume_prct_store lower_contour_raw_90_weighted_volume_prct_store lower_contour_raw_95_weighted_volume_prct_store lower_contour_raw_80_linear_volume_prct_store lower_contour_raw_90_linear_volume_prct_store lower_contour_raw_95_linear_volume_prct_store lower_contour_raw_80_observed_weighted_volume_prct_store lower_contour_raw_90_observed_weighted_volume_prct_store lower_contour_raw_95_observed_weighted_volume_prct_store '...
+      'upper_contour_raw_80_volume_prct_store upper_contour_raw_90_volume_prct_store upper_contour_raw_95_volume_prct_store upper_contour_raw_80_weighted_volume_prct_store upper_contour_raw_90_weighted_volume_prct_store upper_contour_raw_95_weighted_volume_prct_store upper_contour_raw_80_linear_volume_prct_store upper_contour_raw_90_linear_volume_prct_store upper_contour_raw_95_linear_volume_prct_store upper_contour_raw_80_observed_weighted_volume_prct_store upper_contour_raw_90_observed_weighted_volume_prct_store upper_contour_raw_95_observed_weighted_volume_prct_store'])
