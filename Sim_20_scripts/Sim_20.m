@@ -1,4 +1,4 @@
-function Sim_19(nSubj,SvNm,nRlz)
+function Sim_20(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
@@ -172,15 +172,7 @@ supG_raw_linear                  = zeros(nBoot,1);
 supG_raw_observed_weighted       = zeros(nBoot,1);
 
 % Creating linearly increasing signal across columns
-Sig = CircularSignal(wdim, rad, mag, 0);
-
-% Smoothing the signal
-[Sigs,ss]      = spm_conv(Sig,smo,smo);
-
-% Truncate to avoid edge effects
-tSigs          = Sigs(trnind{1}, trnind{2});
-maxtSigs       = max(tSigs(:));
-Sig            = (mag/maxtSigs)*tSigs;
+Sig = repmat(linspace(1, 3), dim(2), 1);
 
 % Uncomment to look at the Signal
 %imagesc(Sig); axis image; colorbar
