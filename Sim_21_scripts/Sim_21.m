@@ -1,4 +1,4 @@
-function Sim_20(nSubj,SvNm,nRlz)
+function Sim_21(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
@@ -49,7 +49,9 @@ raw_noise      = zeros([wdim nSubj]);
 subset_success_vector_raw_80           = zeros(nRlz, 1); 
 subset_success_vector_raw_90           = zeros(nRlz, 1);
 subset_success_vector_raw_95           = zeros(nRlz, 1);
-
+subset_success_vector_raw_80_alternate = zeros(nRlz, 1); 
+subset_success_vector_raw_90_alternate = zeros(nRlz, 1);
+subset_success_vector_raw_95_alternate = zeros(nRlz, 1);
 
 %- This vector stores the threshold value 'c' for each run
 threshold_raw_80_store                  = zeros(nRlz, 1);
@@ -252,7 +254,7 @@ for t=1:nRlz
     upper_contour_raw_95_volume_prct_store(t)              = upper_contour_raw_95_volume_prct;
     
     if sum(upper_subset_mid_raw_80(:))+sum(mid_subset_lower_raw_80(:))==0
-      subset_success_vector_raw_80(t) = 1; 
+      subset_success_vector_raw_80(t) = 1;
       fprintf('raw nominal 80 true boundary success! \n');
     else 
       subset_success_vector_raw_80(t) = 0; 
@@ -276,24 +278,118 @@ for t=1:nRlz
     end 
 
     
-    lshift_observed_mean =  lshift_w1.*observed_mean(lshift) + lshift_w2.*observed_mean(lshift(:,[dim(2) 1:dim(2)-1]))
+    lshift_observed_mean_boundary = abs(lshift_w1.*observed_mean(lshift) + lshift_w2.*observed_mean(lshift(:,[dim(2) 1:dim(2)-1])));
+    rshift_observed_mean_boundary = abs(rshift_w1.*observed_mean(rshift) + rshift_w2.*observed_mean(rshift(:,[2:dim(2) 1])));
+    ushift_observed_mean_boundary = abs(ushift_w1.*observed_mean(ushift) + ushift_w2.*observed_mean(ushift([dim(1) 1:dim(1)-1],:)));
+    dshift_observed_mean_boundary = abs(dshift_w1.*observed_mean(dshift) + dshift_w2.*observed_mean(dshift([2:dim(1) 1],:)));
+    
+    lower_condition_80 = thr - supGa_raw_80*tau*observed_std;
+    upper_condition_80 = thr + supGa_raw_80*tau*observed_std;
+    lower_condition_90 = thr - supGa_raw_90*tau*observed_std;
+    upper_condition_90 = thr + supGa_raw_90*tau*observed_std;
+    lower_condition_95 = thr - supGa_raw_95*tau*observed_std;
+    upper_condition_95 = thr + supGa_raw_95*tau*observed_std;
+    
+    lshift_lower_condition_80_boundary = abs(lshift_w1.*lower_condition_80(lshift) + lshift_w2.*lower_condition_80(lshift(:,[dim(2) 1:dim(2)-1])));
+    rshift_lower_condition_80_boundary = abs(rshift_w1.*lower_condition_80(rshift) + rshift_w2.*lower_condition_80(rshift(:,[2:dim(2) 1])));
+    ushift_lower_condition_80_boundary = abs(ushift_w1.*lower_condition_80(ushift) + ushift_w2.*lower_condition_80(ushift([dim(1) 1:dim(1)-1],:)));
+    dshift_lower_condition_80_boundary = abs(dshift_w1.*lower_condition_80(dshift) + dshift_w2.*lower_condition_80(dshift([2:dim(1) 1],:)));
+    
+    lshift_upper_condition_80_boundary = abs(lshift_w1.*upper_condition_80(lshift) + lshift_w2.*upper_condition_80(lshift(:,[dim(2) 1:dim(2)-1])));
+    rshift_upper_condition_80_boundary = abs(rshift_w1.*upper_condition_80(rshift) + rshift_w2.*upper_condition_80(rshift(:,[2:dim(2) 1])));
+    ushift_upper_condition_80_boundary = abs(ushift_w1.*upper_condition_80(ushift) + ushift_w2.*upper_condition_80(ushift([dim(1) 1:dim(1)-1],:)));
+    dshift_upper_condition_80_boundary = abs(dshift_w1.*upper_condition_80(dshift) + dshift_w2.*upper_condition_80(dshift([2:dim(1) 1],:)));    
+    
+    lshift_lower_condition_90_boundary = abs(lshift_w1.*lower_condition_90(lshift) + lshift_w2.*lower_condition_90(lshift(:,[dim(2) 1:dim(2)-1])));
+    rshift_lower_condition_90_boundary = abs(rshift_w1.*lower_condition_90(rshift) + rshift_w2.*lower_condition_90(rshift(:,[2:dim(2) 1])));
+    ushift_lower_condition_90_boundary = abs(ushift_w1.*lower_condition_90(ushift) + ushift_w2.*lower_condition_90(ushift([dim(1) 1:dim(1)-1],:)));
+    dshift_lower_condition_90_boundary = abs(dshift_w1.*lower_condition_90(dshift) + dshift_w2.*lower_condition_90(dshift([2:dim(1) 1],:)));
+    
+    lshift_upper_condition_90_boundary = abs(lshift_w1.*upper_condition_90(lshift) + lshift_w2.*upper_condition_90(lshift(:,[dim(2) 1:dim(2)-1])));
+    rshift_upper_condition_90_boundary = abs(rshift_w1.*upper_condition_90(rshift) + rshift_w2.*upper_condition_90(rshift(:,[2:dim(2) 1])));
+    ushift_upper_condition_90_boundary = abs(ushift_w1.*upper_condition_90(ushift) + ushift_w2.*upper_condition_90(ushift([dim(1) 1:dim(1)-1],:)));
+    dshift_upper_condition_90_boundary = abs(dshift_w1.*upper_condition_90(dshift) + dshift_w2.*upper_condition_90(dshift([2:dim(1) 1],:)));
+    
+    lshift_lower_condition_95_boundary = abs(lshift_w1.*lower_condition_95(lshift) + lshift_w2.*lower_condition_95(lshift(:,[dim(2) 1:dim(2)-1])));
+    rshift_lower_condition_95_boundary = abs(rshift_w1.*lower_condition_95(rshift) + rshift_w2.*lower_condition_95(rshift(:,[2:dim(2) 1])));
+    ushift_lower_condition_95_boundary = abs(ushift_w1.*lower_condition_95(ushift) + ushift_w2.*lower_condition_95(ushift([dim(1) 1:dim(1)-1],:)));
+    dshift_lower_condition_95_boundary = abs(dshift_w1.*lower_condition_95(dshift) + dshift_w2.*lower_condition_95(dshift([2:dim(1) 1],:)));
+    
+    lshift_upper_condition_95_boundary = abs(lshift_w1.*upper_condition_95(lshift) + lshift_w2.*upper_condition_95(lshift(:,[dim(2) 1:dim(2)-1])));
+    rshift_upper_condition_95_boundary = abs(rshift_w1.*upper_condition_95(rshift) + rshift_w2.*upper_condition_95(rshift(:,[2:dim(2) 1])));
+    ushift_upper_condition_95_boundary = abs(ushift_w1.*upper_condition_95(ushift) + ushift_w2.*upper_condition_95(ushift([dim(1) 1:dim(1)-1],:)));
+    dshift_upper_condition_95_boundary = abs(dshift_w1.*upper_condition_95(dshift) + dshift_w2.*upper_condition_95(dshift([2:dim(1) 1],:)));
+    
+    lower_condition_80_success = [lshift_observed_mean_boundary < lshift_lower_condition_80_boundary, ... 
+                                  rshift_observed_mean_boundary < rshift_lower_condition_80_boundary, ...
+                                  ushift_observed_mean_boundary < ushift_lower_condition_80_boundary, ...
+                                  dshift_observed_mean_boundary < dshift_lower_condition_80_boundary];
+    upper_condition_80_success = [lshift_observed_mean_boundary >= lshift_upper_condition_80_boundary, ... 
+                                  rshift_observed_mean_boundary >= rshift_upper_condition_80_boundary, ...
+                                  ushift_observed_mean_boundary >= ushift_upper_condition_80_boundary, ...
+                                  dshift_observed_mean_boundary >= dshift_upper_condition_80_boundary];
+                              
+    lower_condition_90_success = [lshift_observed_mean_boundary < lshift_lower_condition_90_boundary, ... 
+                                  rshift_observed_mean_boundary < rshift_lower_condition_90_boundary, ...
+                                  ushift_observed_mean_boundary < ushift_lower_condition_90_boundary, ...
+                                  dshift_observed_mean_boundary < dshift_lower_condition_90_boundary];
+    upper_condition_90_success = [lshift_observed_mean_boundary >= lshift_upper_condition_90_boundary, ... 
+                                  rshift_observed_mean_boundary >= rshift_upper_condition_90_boundary, ...
+                                  ushift_observed_mean_boundary >= ushift_upper_condition_90_boundary, ...
+                                  dshift_observed_mean_boundary >= dshift_upper_condition_90_boundary];
+                              
+    lower_condition_95_success = [lshift_observed_mean_boundary < lshift_lower_condition_95_boundary, ... 
+                                  rshift_observed_mean_boundary < rshift_lower_condition_95_boundary, ...
+                                  ushift_observed_mean_boundary < ushift_lower_condition_95_boundary, ...
+                                  dshift_observed_mean_boundary < dshift_lower_condition_95_boundary];
+    upper_condition_95_success = [lshift_observed_mean_boundary >= lshift_upper_condition_95_boundary, ... 
+                                  rshift_observed_mean_boundary >= rshift_upper_condition_95_boundary, ...
+                                  ushift_observed_mean_boundary >= ushift_upper_condition_95_boundary, ...
+                                  dshift_observed_mean_boundary >= dshift_upper_condition_95_boundary];
+                              
+    if sum(upper_condition_80_success)+sum(lower_condition_80_success)==0
+      subset_success_vector_raw_80_alternate(t) = 1;
+      fprintf('raw nominal 80 alternate success! \n');
+    else 
+      subset_success_vector_raw_80_alternate(t) = 0; 
+      fprintf('raw nominal 80 alternate failure! \n');
+    end
+    
+    if sum(upper_condition_90_success)+sum(lower_condition_90_success)==0
+      subset_success_vector_raw_90_alternate(t) = 1;
+      fprintf('raw nominal 90 alternate success! \n');
+    else 
+      subset_success_vector_raw_90_alternate(t) = 0; 
+      fprintf('raw nominal 90 alternate failure! \n');
+    end
 
+    if sum(upper_condition_95_success)+sum(lower_condition_95_success)==0
+      subset_success_vector_raw_95_alternate(t) = 1;
+      fprintf('raw nominal 95 alternate success! \n');
+    else 
+      subset_success_vector_raw_95_alternate(t) = 0; 
+      fprintf('raw nominal 95 alternate failure! \n');
+    end    
+                              
 end
 
 percentage_success_vector_raw_80                         = mean(subset_success_vector_raw_80, 1);
 percentage_success_vector_raw_90                         = mean(subset_success_vector_raw_90, 1);
 percentage_success_vector_raw_95                         = mean(subset_success_vector_raw_95, 1);
 
+percentage_success_vector_raw_80_alternate               = mean(subset_success_vector_raw_80_alternate, 1);
+percentage_success_vector_raw_90_alternate               = mean(subset_success_vector_raw_90_alternate, 1);
+percentage_success_vector_raw_95_alternate               = mean(subset_success_vector_raw_95_alternate, 1);
 
 eval(['save ' SvNm ' nSubj nRlz dim smo mag rimFWHM thr nBoot '... 
-      'threshold_raw_80_store threshold_raw_90_store threshold_raw_95_store threshold_raw_80_weighted_store threshold_raw_90_weighted_store threshold_raw_95_weighted_store threshold_raw_80_linear_store threshold_raw_90_linear_store threshold_raw_95_linear_store threshold_raw_80_observed_weighted_store threshold_raw_90_observed_weighted_store threshold_raw_95_observed_weighted_store '...
-      'lower_contour_raw_80_store lower_contour_raw_90_store lower_contour_raw_95_store lower_contour_raw_80_weighted_store lower_contour_raw_90_weighted_store lower_contour_raw_95_weighted_store lower_contour_raw_80_linear_store lower_contour_raw_90_linear_store lower_contour_raw_95_linear_store lower_contour_raw_80_observed_weighted_store lower_contour_raw_90_observed_weighted_store lower_contour_raw_95_observed_weighted_store '...
-      'upper_contour_raw_80_store upper_contour_raw_90_store upper_contour_raw_95_store upper_contour_raw_80_weighted_store upper_contour_raw_90_weighted_store upper_contour_raw_95_weighted_store upper_contour_raw_80_linear_store upper_contour_raw_90_linear_store upper_contour_raw_95_linear_store upper_contour_raw_80_observed_weighted_store upper_contour_raw_90_observed_weighted_store upper_contour_raw_95_observed_weighted_store '...
-      'upper_subset_mid_raw_80_store upper_subset_mid_raw_90_store upper_subset_mid_raw_95_store upper_subset_mid_raw_80_weighted_store upper_subset_mid_raw_90_weighted_store upper_subset_mid_raw_95_weighted_store upper_subset_mid_raw_80_linear_store upper_subset_mid_raw_90_linear_store upper_subset_mid_raw_95_linear_store upper_subset_mid_raw_80_observed_weighted_store upper_subset_mid_raw_90_observed_weighted_store upper_subset_mid_raw_95_observed_weighted_store '...
-      'mid_subset_lower_raw_80_store mid_subset_lower_raw_90_store mid_subset_lower_raw_95_store mid_subset_lower_raw_80_weighted_store mid_subset_lower_raw_90_weighted_store mid_subset_lower_raw_95_weighted_store mid_subset_lower_raw_80_linear_store mid_subset_lower_raw_90_linear_store mid_subset_lower_raw_95_linear_store mid_subset_lower_raw_80_observed_weighted_store mid_subset_lower_raw_90_observed_weighted_store mid_subset_lower_raw_95_observed_weighted_store '...
-      'subset_success_vector_raw_80 subset_success_vector_raw_90 subset_success_vector_raw_95 subset_success_vector_raw_80_weighted subset_success_vector_raw_90_weighted subset_success_vector_raw_95_weighted subset_success_vector_raw_80_linear subset_success_vector_raw_90_linear subset_success_vector_raw_95_linear subset_success_vector_raw_80_observed_weighted subset_success_vector_raw_90_observed_weighted subset_success_vector_raw_95_observed_weighted '...
-      'percentage_success_vector_raw_80 percentage_success_vector_raw_90 percentage_success_vector_raw_95 percentage_success_vector_raw_80_weighted percentage_success_vector_raw_90_weighted percentage_success_vector_raw_95_weighted percentage_success_vector_raw_80_linear percentage_success_vector_raw_90_linear percentage_success_vector_raw_95_linear percentage_success_vector_raw_80_observed_weighted percentage_success_vector_raw_90_observed_weighted percentage_success_vector_raw_95_observed_weighted '...
-      'supG_raw_store supG_raw_weighted_store supG_raw_linear_store supG_raw_observed_weighted_store '...
-      'middle_contour_volume observed_AC_volume '...
-      'lower_contour_raw_80_volume_prct_store lower_contour_raw_90_volume_prct_store lower_contour_raw_95_volume_prct_store lower_contour_raw_80_weighted_volume_prct_store lower_contour_raw_90_weighted_volume_prct_store lower_contour_raw_95_weighted_volume_prct_store lower_contour_raw_80_linear_volume_prct_store lower_contour_raw_90_linear_volume_prct_store lower_contour_raw_95_linear_volume_prct_store lower_contour_raw_80_observed_weighted_volume_prct_store lower_contour_raw_90_observed_weighted_volume_prct_store lower_contour_raw_95_observed_weighted_volume_prct_store '...
-      'upper_contour_raw_80_volume_prct_store upper_contour_raw_90_volume_prct_store upper_contour_raw_95_volume_prct_store upper_contour_raw_80_weighted_volume_prct_store upper_contour_raw_90_weighted_volume_prct_store upper_contour_raw_95_weighted_volume_prct_store upper_contour_raw_80_linear_volume_prct_store upper_contour_raw_90_linear_volume_prct_store upper_contour_raw_95_linear_volume_prct_store upper_contour_raw_80_observed_weighted_volume_prct_store upper_contour_raw_90_observed_weighted_volume_prct_store upper_contour_raw_95_observed_weighted_volume_prct_store'])
+      'threshold_raw_80_store threshold_raw_90_store threshold_raw_95_store '...
+      'lower_contour_raw_80_store lower_contour_raw_90_store lower_contour_raw_95_store '...
+      'upper_contour_raw_80_store upper_contour_raw_90_store upper_contour_raw_95_store '...
+      'upper_subset_mid_raw_80_store upper_subset_mid_raw_90_store upper_subset_mid_raw_95_store '...
+      'mid_subset_lower_raw_80_store mid_subset_lower_raw_90_store mid_subset_lower_raw_95_store '...
+      'subset_success_vector_raw_80 subset_success_vector_raw_90 subset_success_vector_raw_95 subset_success_vector_raw_80_alternate subset_success_vector_raw_90_alternate subset_success_vector_raw_95_alternate '...
+      'percentage_success_vector_raw_80 percentage_success_vector_raw_90 percentage_success_vector_raw_95 percentage_success_vector_raw_80_alternate percentage_success_vector_raw_90_alternate percentage_success_vector_raw_95_alternate '...
+      'supG_raw_store '...
+      'middle_contour_volume '...
+      'lower_contour_raw_80_volume_prct_store lower_contour_raw_90_volume_prct_store lower_contour_raw_95_volume_prct_store '...
+      'upper_contour_raw_80_volume_prct_store upper_contour_raw_90_volume_prct_store upper_contour_raw_95_volume_prct_store'])
