@@ -419,7 +419,7 @@ for t=1:nRlz
           
           %% Low res case
           resid_bootstrap_low_res                        = resid_low_res*spdiags(signflips, 0, nSubj, nSubj);
-          resid_bootstrap_low_res                        = reshape(resid_bootstrap_low_res, [dim nSubj]);
+          resid_bootstrap_low_res                        = reshape(resid_bootstrap_low_res, [dim_low_res nSubj]);
           resid_field_low_res                            = sum(resid_bootstrap_low_res, 3)/sqrt(nSubj);
           
           % Calculating the maximum over the mu = thresh weighted boundary edges
@@ -971,7 +971,7 @@ for t=1:nRlz
     ushift_lower_condition_95_boundary_low_res = abs(ushift_w1_low_res.*lower_condition_95_low_res(ushift_low_res) + ushift_w2_low_res.*lower_condition_95_low_res(ushift_low_res([dim_low_res(1) 1:dim_low_res(1)-1],:)));
     dshift_lower_condition_95_boundary_low_res = abs(dshift_w1_low_res.*lower_condition_95_low_res(dshift_low_res) + dshift_w2_low_res.*lower_condition_95_low_res(dshift_low_res([2:dim_low_res(1) 1],:)));
     
-    lshift_upper_condition_95_boundary_low_res = abs(lshift_w1_low_res.*upper_condition_95_low_res(lshif_low_rest) + lshift_w2_low_res.*upper_condition_95_low_res(lshift_low_res(:,[dim_low_res(2) 1:dim_low_res(2)-1])));
+    lshift_upper_condition_95_boundary_low_res = abs(lshift_w1_low_res.*upper_condition_95_low_res(lshift_low_res) + lshift_w2_low_res.*upper_condition_95_low_res(lshift_low_res(:,[dim_low_res(2) 1:dim_low_res(2)-1])));
     rshift_upper_condition_95_boundary_low_res = abs(rshift_w1_low_res.*upper_condition_95_low_res(rshift_low_res) + rshift_w2_low_res.*upper_condition_95_low_res(rshift_low_res(:,[2:dim_low_res(2) 1])));
     ushift_upper_condition_95_boundary_low_res = abs(ushift_w1_low_res.*upper_condition_95_low_res(ushift_low_res) + ushift_w2_low_res.*upper_condition_95_low_res(ushift_low_res([dim_low_res(1) 1:dim_low_res(1)-1],:)));
     dshift_upper_condition_95_boundary_low_res = abs(dshift_w1_low_res.*upper_condition_95_low_res(dshift_low_res) + dshift_w2_low_res.*upper_condition_95_low_res(dshift_low_res([2:dim_low_res(1) 1],:)));
