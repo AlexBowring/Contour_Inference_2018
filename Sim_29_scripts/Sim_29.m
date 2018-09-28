@@ -48,9 +48,6 @@ trnind      = cat(2, trunc_x, trunc_y, trunc_z);
 
 resid  = zeros([prod(dim) nSubj]);
 
-observed_data  = zeros([dim nSubj]);
-raw_noise      = zeros([wdim nSubj]);
-
 % This stores the vector SupG for each run
 % This vector stores the result for each realisation on whether AC^+ < AC < AC^ for each level of smoothing (1 if true, 0 if false) 
 subset_success_vector_raw_80           = zeros(nRlz, 1); 
