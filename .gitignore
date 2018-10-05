@@ -1,2 +1,4 @@
 Sim_??_results/
 Fabians_Sims/
+*.nii
+*.nii.gz
