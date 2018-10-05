@@ -104,17 +104,84 @@ for i=1:nSubj
 end
 toc
 
-% Computing variables of interest for the Cohen's d case
+%% Computing variables of interest for the Cohen's d case
 cohen_d = observed_mean./observed_std;
 cohen_d_std      = sqrt(1 + cohen_d.^2/2);
 
 cohen_d_AC       = cohen_d >= thr;
 
+% Residuals using the SNR transformation
 cohen_d_resid = ( (bsxfun(@minus, datamat, observed_mean))./observed_std - cohen_d/2.*(((bsxfun(@minus, datamat, observed_mean))./observed_std).^2-1) )...
                     ./ cohen_d_std;
 
+% Calculating boundary edges for cohen d
+% Making the interpolated boundary edges
+% Horizontal edges
+cohen_d_horz                  = cohen_d_AC(:,2:end,:) | cohen_d_AC(:,1:end-1,:);
+% Compute the left shifted horizontal edges
+cohen_d_lshift               = cohen_d_AC; % initialize
+cohen_d_lshift(:,1:end-1,:)  = cohen_d_horz;
+cohen_d_lshift               = cohen_d_lshift & ~cohen_d_AC;
+%%% Compute the right shifted horizontal edges
+cohen_d_rshift               = cohen_d_AC; % initialize
+cohen_d_rshift(:,2:end,:)    = cohen_d_horz;
+cohen_d_rshift               = cohen_d_rshift & ~cohen_d_AC;
+% Vertical edges
+cohen_d_vert			      = cohen_d_AC(1:end-1,:,:) | cohen_d_AC(2:end,:,:);
+%%% Compute the up shifted horizontal edges
+cohen_d_ushift               = cohen_d_AC;
+cohen_d_ushift(1:end-1,:,:)  = cohen_d_vert;
+cohen_d_ushift               = cohen_d_ushift & ~cohen_d_AC;
+%%% Compute the down shifted vertical edges
+cohen_d_dshift               = cohen_d_AC;
+cohen_d_dshift(2:end,:,:)    = cohen_d_vert;
+cohen_d_dshift               = cohen_d_dshift & ~cohen_d_AC;
+% Depth edges
+cohen_d_depth                 = cohen_d_AC(:,:,1:end-1) | cohen_d_AC(:,:,2:end);
+%%% Compute the back shifted depth edges
+cohen_d_bshift               = cohen_d_AC;
+cohen_d_bshift(:,:,1:end-1)  = cohen_d_depth;
+cohen_d_bshift               = cohen_d_bshift & ~cohen_d_AC;
+%%% Compute the front shifted depth edges
+cohen_d_fshift              = cohen_d_AC;
+cohen_d_fshift(:,:,2:end)   = cohen_d_depth;
+cohen_d_fshift              = cohen_d_fshift & ~cohen_d_AC;
 
+% Computing the weights for the weighted linear boundary
+cohen_d_lshift_w1 = abs(cohen_d(cohen_d_lshift(:,[dim(2) 1:dim(2)-1],:)) - thr)./abs(cohen_d(cohen_d_lshift) - cohen_d(cohen_d_lshift(:,[dim(2) 1:dim(2)-1],:)));
+cohen_d_lshift_w2 = abs(cohen_d(cohen_d_lshift) - thr)./abs(cohen_d(cohen_d_lshift) - cohen_d(cohen_d_lshift(:,[dim(2) 1:dim(2)-1],:)));
 
+cohen_d_rshift_w1 = abs(cohen_d(cohen_d_rshift(:,[2:dim(2) 1],:)) - thr)./abs(cohen_d(cohen_d_rshift) - cohen_d(cohen_d_rshift(:,[2:dim(2) 1],:)));
+cohen_d_rshift_w2 = abs(cohen_d(cohen_d_rshift) - thr)./abs(cohen_d(cohen_d_rshift) - cohen_d(cohen_d_rshift(:,[2:dim(2) 1],:)));
+
+cohen_d_ushift_w1 = abs(cohen_d(cohen_d_ushift([dim(1) 1:dim(1)-1],:,:)) - thr)./abs(cohen_d(cohen_d_ushift) - cohen_d(cohen_d_ushift([dim(1) 1:dim(1)-1],:,:)));
+cohen_d_ushift_w2 = abs(cohen_d(cohen_d_ushift) - thr)./abs(cohen_d(cohen_d_ushift) - cohen_d(cohen_d_ushift([dim(1) 1:dim(1)-1],:,:)));
+
+cohen_d_dshift_w1 = abs(cohen_d(cohen_d_dshift([2:dim(1) 1],:,:)) - thr)./abs(cohen_d(cohen_d_dshift) - cohen_d(cohen_d_dshift([2:dim(1) 1],:,:)));
+cohen_d_dshift_w2 = abs(cohen_d(cohen_d_dshift) - thr)./abs(cohen_d(cohen_d_dshift) - cohen_d(cohen_d_dshift([2:dim(1) 1],:,:)));
+
+cohen_d_bshift_w1 = abs(cohen_d(cohen_d_bshift(:,:,[dim(3) 1:dim(3)-1])) - thr)./abs(cohen_d(cohen_d_bshift) - cohen_d(cohen_d_bshift(:,:,[dim(3) 1:dim(3)-1])));
+cohen_d_bshift_w2 = abs(cohen_d(cohen_d_bshift) - thr)./abs(cohen_d(cohen_d_bshift) - cohen_d(cohen_d_bshift(:,:,[dim(3) 1:dim(3)-1])));
+
+cohen_d_fshift_w1 = abs(cohen_d(cohen_d_fshift(:,:,[2:dim(3) 1])) - thr)./abs(cohen_d(cohen_d_fshift) - cohen_d(cohen_d_fshift(:,:,[2:dim(3) 1])));
+cohen_d_fshift_w2 = abs(cohen_d(cohen_d_fshift) - thr)./abs(cohen_d(cohen_d_fshift) - cohen_d(cohen_d_fshift(:,:,[2:dim(3) 1])));
+
+% Finding the values of the residuals on the interpolated boundary
+cohen_d_resid_boundary_values = zeros([size(cohen_d_lshift_w1,1)+size(cohen_d_rshift_w1,1)+size(cohen_d_ushift_w1,1)+size(cohen_d_dshift_w1,1)+size(cohen_d_bshift_w1,1)+size(cohen_d_fshift_w1,1) nSubj]);
+tic
+for i=1:nSubj
+  subject_resid_field = reshape(resid(:,i), [dim 1]);
+
+  cohen_d_lshift_boundary_values = cohen_d_lshift_w1.*subject_resid_field(cohen_d_lshift) + cohen_d_lshift_w2.*subject_resid_field(cohen_d_lshift(:,[dim(2) 1:dim(2)-1],:));
+  cohen_d_rshift_boundary_values = cohen_d_rshift_w1.*subject_resid_field(cohen_d_rshift) + cohen_d_rshift_w2.*subject_resid_field(cohen_d_rshift(:,[2:dim(2) 1],:));
+  cohen_d_ushift_boundary_values = cohen_d_ushift_w1.*subject_resid_field(cohen_d_ushift) + cohen_d_ushift_w2.*subject_resid_field(cohen_d_ushift([dim(1) 1:dim(1)-1],:,:));
+  cohen_d_dshift_boundary_values = cohen_d_dshift_w1.*subject_resid_field(cohen_d_dshift) + cohen_d_dshift_w2.*subject_resid_field(cohen_d_dshift([2:dim(1) 1],:,:));
+  cohen_d_bshift_boundary_values = cohen_d_bshift_w1.*subject_resid_field(cohen_d_bshift) + cohen_d_bshift_w2.*subject_resid_field(cohen_d_bshift(:,:,[dim(3) 1:dim(3)-1]));
+  cohen_d_fshift_boundary_values = cohen_d_fshift_w1.*subject_resid_field(cohen_d_fshift) + cohen_d_fshift_w2.*subject_resid_field(cohen_d_fshift(:,:,[2:dim(3) 1]));
+
+  cohen_d_resid_boundary_values(:,i) = [cohen_d_lshift_boundary_values; cohen_d_rshift_boundary_values; cohen_d_ushift_boundary_values; cohen_d_dshift_boundary_values; cohen_d_bshift_boundary_values; cohen_d_fshift_boundary_values];
+end
+toc
 
 % Implementing the Multiplier Boostrap to obtain confidence intervals
 tic
