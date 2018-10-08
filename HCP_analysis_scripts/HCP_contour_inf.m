@@ -4,7 +4,7 @@ cd(String);
 [x,y,z] = ndgrid(-1:1);
 se = strel('arbitrary',sqrt(x.^2 + y.^2 + z.^2) <=1);
 
-thr   = 0.5;  % In raw change units, mu
+thr   = 0.75;  % In raw change units, mu
 nBoot = 5000;
 
 VY=spm_vol('copes.nii.gz');      % This is the file "handle" for all input
@@ -16,9 +16,10 @@ Mask=spm_read_vols(VM)>0;
 nSubj=length(VY);
 dim=VY(1).dim;
 
-datamat = zeros([dim nSubj]);
-supG    = zeros([nBoot 1]);
-tau     = 1/sqrt(nSubj);
+datamat         = zeros([dim nSubj]);
+supG            = zeros([nBoot 1]);
+supG_cohen_d    = zeros([nBoot 1]);
+tau             = 1/sqrt(nSubj);
 
 % Load up each of the 3D images into a massive 4D image
 for i=1:nSubj
@@ -113,7 +114,6 @@ cohen_d_AC       = cohen_d >= thr;
 % Residuals using the SNR transformation
 cohen_d_resid = ( (bsxfun(@minus, datamat, observed_mean))./observed_std - cohen_d/2.*(((bsxfun(@minus, datamat, observed_mean))./observed_std).^2-1) )...
                     ./ cohen_d_std;
-
 % Calculating boundary edges for cohen d
 % Making the interpolated boundary edges
 % Horizontal edges
@@ -170,7 +170,7 @@ cohen_d_fshift_w2 = abs(cohen_d(cohen_d_fshift) - thr)./abs(cohen_d(cohen_d_fshi
 cohen_d_resid_boundary_values = zeros([size(cohen_d_lshift_w1,1)+size(cohen_d_rshift_w1,1)+size(cohen_d_ushift_w1,1)+size(cohen_d_dshift_w1,1)+size(cohen_d_bshift_w1,1)+size(cohen_d_fshift_w1,1) nSubj]);
 tic
 for i=1:nSubj
-  subject_resid_field = reshape(resid(:,i), [dim 1]);
+  subject_resid_field = cohen_d_resid(:,:,:,i);
 
   cohen_d_lshift_boundary_values = cohen_d_lshift_w1.*subject_resid_field(cohen_d_lshift) + cohen_d_lshift_w2.*subject_resid_field(cohen_d_lshift(:,[dim(2) 1:dim(2)-1],:));
   cohen_d_rshift_boundary_values = cohen_d_rshift_w1.*subject_resid_field(cohen_d_rshift) + cohen_d_rshift_w2.*subject_resid_field(cohen_d_rshift(:,[2:dim(2) 1],:));
@@ -192,14 +192,25 @@ for k=1:nBoot
   % Estimated boundary
   observed_boundary_bootstrap       = observed_resid_boundary_values*spdiags(signflips, 0, nSubj, nSubj);
   observed_boundary_resid_field     = sum(observed_boundary_bootstrap, 2)/sqrt(nSubj); 
-  supG(k)                  = max(abs(observed_boundary_resid_field));
+  supG(k)                           = max(abs(observed_boundary_resid_field));
+  
+  % cohens d boundary
+  cohen_d_boundary_bootstrap        = cohen_d_resid_boundary_values*spdiags(signflips, 0, nSubj, nSubj);
+  cohen_d_boundary_resid_field      = sum(cohen_d_boundary_bootstrap, 2)/sqrt(nSubj); 
+  supG_cohen_d(k)                   = max(abs(cohen_d_boundary_resid_field));
+  
 end
 toc
-supGa95  = prctile(supG,95);
+supGa95         = prctile(supG,95);
+supGa95_cohen_d = prctile(supG_cohen_d,95);
 
 LowerCon  = observed_mean >= thr - supGa95*tau*observed_std;
 MiddleCon = observed_AC;
 UpperCon  = observed_mean >= thr + supGa95*tau*observed_std;
+
+LowerCon_cohen_d   = cohen_d >= thr - supGa95_cohen_d*tau*cohen_d_std;
+MiddleCon_cohen_d  = cohen_d_AC;
+UpperCon_cohen_d   = cohen_d >= thr + supGa95_cohen_d*tau*cohen_d_std;
 
 % Making the edge image for visualization purposes
 observed_AC_dil = imdilate(observed_AC,se);
@@ -222,21 +233,21 @@ imagesc(UpperCon(:,:,40));axis image; colorbar
 
 cd(Out);
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'LowerConfidenceInterval_c0050.nii'; % crucially, change the file name!
+Vout.fname = 'LowerConfidenceInterval_c0075.nii'; % crucially, change the file name!
 Vout.descrip = 'Lower confidence interval!'; % Actually, put something more
                                         % informative here
 
 Vout=spm_write_vol(Vout,LowerCon);
 
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'MiddleConfidenceInterval_c0050.nii'; % crucially, change the file name!
+Vout.fname = 'MiddleConfidenceInterval_c0075.nii'; % crucially, change the file name!
 Vout.descrip = 'Middle confidence interval!'; % Actually, put something more
                                         % informative here
 
 Vout=spm_write_vol(Vout,MiddleCon);
 
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'UpperConfidenceInterval_c0050.nii'; % crucially, change the file name!
+Vout.fname = 'UpperConfidenceInterval_c0075.nii'; % crucially, change the file name!
 Vout.descrip = 'Upper confidence interval!'; % Actually, put something more
                                         % informative here
 
@@ -264,6 +275,27 @@ Vout.descrip = 'cohens d (signal-to-noise)'; % Actually, put something more
 
 Vout=spm_write_vol(Vout,cohen_d);
 
+%% Creating Cohen d images 
+Vout=VY(1); % clone the first image's handle
+Vout.fname = 'cohen_LowerConfidenceInterval_c0075.nii'; % crucially, change the file name!
+Vout.descrip = 'Lower confidence interval!'; % Actually, put something more
+                                        % informative here
+
+Vout=spm_write_vol(Vout,LowerCon_cohen_d);
+
+Vout=VY(1); % clone the first image's handle
+Vout.fname = 'cohen_MiddleConfidenceInterval_c0075.nii'; % crucially, change the file name!
+Vout.descrip = 'Middle confidence interval!'; % Actually, put something more
+                                        % informative here
+
+Vout=spm_write_vol(Vout,MiddleCon_cohen_d);
+
+Vout=VY(1); % clone the first image's handle
+Vout.fname = 'cohen_UpperConfidenceInterval_c0075.nii'; % crucially, change the file name!
+Vout.descrip = 'Upper confidence interval!'; % Actually, put something more
+                                        % informative here
+
+Vout=spm_write_vol(Vout,UpperCon_cohen_d);
 
 toc
 end
