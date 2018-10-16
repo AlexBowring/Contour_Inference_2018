@@ -100,7 +100,7 @@ supG_observed                    = zeros(nBoot,1);
 
 % Creating a sphere of signal
 Sig = imtranslate(SpheroidSignal(wdim, 20, 3, 0),[-10,-25]) + imtranslate(SpheroidSignal(wdim, 15, 3,0),[20, -10]) + imtranslate(SpheroidSignal(wdim, 10, 3,0),[25, 13]) + ...
-      imtranslate(SpheroidSignal(wdim, 18, 2.5, 0),[-15,25]);
+      imtranslate(SpheroidSignal(wdim, 18, 3, 0),[-15,25]);
 
 % Smoothing the signal
 Sigs = zeros(wdim);
