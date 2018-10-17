@@ -1,5 +1,5 @@
 HCP    ='/home/essicd/storage/data/HCP/Unrelated_80';
-Outdir ='/storage/maullz/Contour_Inference_2018/HCP_analysis_results';
+Outdir ='/storage/maullz/Contour_Inference_2018/HCP_analysis_data';
 
 if ~isdir(Outdir)
     mkdir(Outdir)
@@ -16,6 +16,9 @@ for i=1:length(Copes)
     copyfile(fullfile(Copes(i).folder,Copes(i).name), fullfile(Outdir, ['cope_' sub_id '.nii.gz'])); 
     command   = ['fslmaths ' fullfile(Varcopes(i).folder,Varcopes(i).name) ' -bin ' fullfile(Outdir, ['mask_' sub_id '.nii.gz'])];
     system(command);    
+    % Adding additional smoothing to the Cope image so that final image has 6mm FWHM smoothing. Using the squation FWHM = sigma*sqrt(8ln2) with FWHM = sqrt(6^2 - 4^2) 
+    command   = ['fslmaths ' fullfile(Outdir, ['cope_' sub_id '.nii.gz']) ' -kernel gauss 1.9 -fmean ' fullfile(Outdir, ['smooth_cope_' sub_id '.nii.gz'])];
+    system(command);
 end
 
 % Concatenate copes to 4D file
@@ -23,12 +26,15 @@ out_copes = cellstr(spm_select('FPList', Outdir, 'cope.*\.nii.gz$'));
 command = strcat('fslmerge -t', {' '}, fullfile(Outdir,'copes.nii.gz'), {' '}, strjoin(out_copes'));
 system(char(command));
 
-% Create group mask
+% Concatenate smooth copes to 4D file
+out_copes = cellstr(spm_select('FPList', Outdir, 'smooth_cope.*\.nii.gz$'));
+command = strcat('fslmerge -t', {' '}, fullfile(Outdir,'smooth_copes.nii.gz'), {' '}, strjoin(out_copes'));
+system(char(command));
+
+% Create group mask from the original, unsmoothed copes
 out_masks = cellstr(spm_select('FPList', Outdir, 'mask.*\.nii.gz$'));
 command = strcat('fslmerge -t', {' '}, fullfile(Outdir,'group_mask.nii.gz'), {' '}, strjoin(out_masks'));
 system(char(command));
 
 command = ['fslmaths ' fullfile(Outdir,'group_mask.nii.gz') ' -Tmin ' fullfile(Outdir,'group_mask.nii.gz')];
 system(command); 
-
-HCP_contour_inf(Outdir,Outdir); 

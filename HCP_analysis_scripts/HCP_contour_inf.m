@@ -4,10 +4,10 @@ cd(String);
 [x,y,z] = ndgrid(-1:1);
 se = strel('arbitrary',sqrt(x.^2 + y.^2 + z.^2) <=1);
 
-thr   = 0.75;  % In raw change units, mu
+thr   = 25.0;  % In raw change units, mu
 nBoot = 5000;
 
-VY=spm_vol('copes.nii.gz');      % This is the file "handle" for all input
+VY=spm_vol('smooth_copes.nii.gz');      % This is the file "handle" for all input
                                  % images  - Ignore gzip warning
 VM=spm_vol('group_mask.nii.gz'); % This is the handle for the mask
 
@@ -195,22 +195,22 @@ for k=1:nBoot
   supG(k)                           = max(abs(observed_boundary_resid_field));
   
   % cohens d boundary
-  cohen_d_boundary_bootstrap        = cohen_d_resid_boundary_values*spdiags(signflips, 0, nSubj, nSubj);
-  cohen_d_boundary_resid_field      = sum(cohen_d_boundary_bootstrap, 2)/sqrt(nSubj); 
-  supG_cohen_d(k)                   = max(abs(cohen_d_boundary_resid_field));
+  %cohen_d_boundary_bootstrap        = cohen_d_resid_boundary_values*spdiags(signflips, 0, nSubj, nSubj);
+  %cohen_d_boundary_resid_field      = sum(cohen_d_boundary_bootstrap, 2)/sqrt(nSubj); 
+  %supG_cohen_d(k)                   = max(abs(cohen_d_boundary_resid_field));
   
 end
 toc
 supGa95         = prctile(supG,95);
-supGa95_cohen_d = prctile(supG_cohen_d,95);
+%supGa95_cohen_d = prctile(supG_cohen_d,95);
 
 LowerCon  = observed_mean >= thr - supGa95*tau*observed_std;
 MiddleCon = observed_AC;
 UpperCon  = observed_mean >= thr + supGa95*tau*observed_std;
 
-LowerCon_cohen_d   = cohen_d >= thr - supGa95_cohen_d*tau*cohen_d_std;
-MiddleCon_cohen_d  = cohen_d_AC;
-UpperCon_cohen_d   = cohen_d >= thr + supGa95_cohen_d*tau*cohen_d_std;
+%LowerCon_cohen_d   = cohen_d >= thr - supGa95_cohen_d*tau*cohen_d_std;
+%MiddleCon_cohen_d  = cohen_d_AC;
+%UpperCon_cohen_d   = cohen_d >= thr + supGa95_cohen_d*tau*cohen_d_std;
 
 % Making the edge image for visualization purposes
 observed_AC_dil = imdilate(observed_AC,se);
@@ -233,21 +233,21 @@ imagesc(UpperCon(:,:,40));axis image; colorbar
 
 cd(Out);
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'LowerConfidenceInterval_c0075.nii'; % crucially, change the file name!
+Vout.fname = 'smooth_LowerConfidenceInterval_c2500.nii'; % crucially, change the file name!
 Vout.descrip = 'Lower confidence interval!'; % Actually, put something more
                                         % informative here
 
 Vout=spm_write_vol(Vout,LowerCon);
 
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'MiddleConfidenceInterval_c0075.nii'; % crucially, change the file name!
+Vout.fname = 'smooth_MiddleConfidenceInterval_c2500.nii'; % crucially, change the file name!
 Vout.descrip = 'Middle confidence interval!'; % Actually, put something more
                                         % informative here
 
 Vout=spm_write_vol(Vout,MiddleCon);
 
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'UpperConfidenceInterval_c0075.nii'; % crucially, change the file name!
+Vout.fname = 'smooth_UpperConfidenceInterval_c2500.nii'; % crucially, change the file name!
 Vout.descrip = 'Upper confidence interval!'; % Actually, put something more
                                         % informative here
 
@@ -255,47 +255,47 @@ Vout=spm_write_vol(Vout,UpperCon);
 
 % Saving mean, SD and cohen's d image
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'mean.nii'; % crucially, change the file name!
+Vout.fname = 'smooth_mean.nii'; % crucially, change the file name!
 Vout.descrip = 'Sample mean'; % Actually, put something more
                                         % informative here
 
 Vout=spm_write_vol(Vout,observed_mean);
 
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'sd.nii'; % crucially, change the file name!
+Vout.fname = 'smooth_sd.nii'; % crucially, change the file name!
 Vout.descrip = 'Standard deviation'; % Actually, put something more
                                         % informative here
 
 Vout=spm_write_vol(Vout,observed_std);
 
-Vout=VY(1); % clone the first image's handle
-Vout.fname = 'cohens_d.nii'; % crucially, change the file name!
-Vout.descrip = 'cohens d (signal-to-noise)'; % Actually, put something more
+% Vout=VY(1); % clone the first image's handle
+% Vout.fname = 'cohens_d.nii'; % crucially, change the file name!
+% Vout.descrip = 'cohens d (signal-to-noise)'; % Actually, put something more
                                         % informative here
 
-Vout=spm_write_vol(Vout,cohen_d);
+% Vout=spm_write_vol(Vout,cohen_d);
 
 %% Creating Cohen d images 
-Vout=VY(1); % clone the first image's handle
-Vout.fname = 'cohen_LowerConfidenceInterval_c0075.nii'; % crucially, change the file name!
-Vout.descrip = 'Lower confidence interval!'; % Actually, put something more
+% Vout=VY(1); % clone the first image's handle
+% Vout.fname = 'cohen_LowerConfidenceInterval_c0075.nii'; % crucially, change the file name!
+% Vout.descrip = 'Lower confidence interval!'; % Actually, put something more
                                         % informative here
 
-Vout=spm_write_vol(Vout,LowerCon_cohen_d);
+% Vout=spm_write_vol(Vout,LowerCon_cohen_d);
 
-Vout=VY(1); % clone the first image's handle
-Vout.fname = 'cohen_MiddleConfidenceInterval_c0075.nii'; % crucially, change the file name!
-Vout.descrip = 'Middle confidence interval!'; % Actually, put something more
+% Vout=VY(1); % clone the first image's handle
+% Vout.fname = 'cohen_MiddleConfidenceInterval_c0075.nii'; % crucially, change the file name!
+% Vout.descrip = 'Middle confidence interval!'; % Actually, put something more
                                         % informative here
 
-Vout=spm_write_vol(Vout,MiddleCon_cohen_d);
+% Vout=spm_write_vol(Vout,MiddleCon_cohen_d);
 
-Vout=VY(1); % clone the first image's handle
-Vout.fname = 'cohen_UpperConfidenceInterval_c0075.nii'; % crucially, change the file name!
-Vout.descrip = 'Upper confidence interval!'; % Actually, put something more
+% Vout=VY(1); % clone the first image's handle
+% Vout.fname = 'cohen_UpperConfidenceInterval_c0075.nii'; % crucially, change the file name!
+% Vout.descrip = 'Upper confidence interval!'; % Actually, put something more
                                         % informative here
 
-Vout=spm_write_vol(Vout,UpperCon_cohen_d);
+% Vout=spm_write_vol(Vout,UpperCon_cohen_d);
 
 toc
 end
