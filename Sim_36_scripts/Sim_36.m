@@ -28,6 +28,7 @@ tau     = 1/sqrt(nSubj);
 nBoot   = 5000;
 dim     = [100 100]; 
 smo     = 3;
+mag     = 3;
 rimFWHM = 2/sqrt(2*log(2)); 				 
 stdblk  = prod(dim([1 2])/2);
 thr     = 2;

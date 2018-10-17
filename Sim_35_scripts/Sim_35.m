@@ -26,6 +26,7 @@ tau     = 1/sqrt(nSubj);
 nBoot   = 5000;
 dim     = [91 109 91]; 
 smo     = 3;
+mag     = 3;
 rimFWHM = 2/sqrt(2*log(2)); 				 
 thr     = 0.25;
 NIFTI_dir = fullfile(pwd,SvNm);
