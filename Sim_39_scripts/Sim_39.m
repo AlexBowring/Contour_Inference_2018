@@ -1,4 +1,4 @@
-function Sim_30(nSubj,SvNm,nRlz)
+function Sim_39(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
@@ -29,10 +29,10 @@ nBoot   = 5000;
 dim     = [100 100 100]; 
 mag     = 3;
 smo     = 3;
-rimFWHM = 2/sqrt(2*log(2));					 
+rimFWHM = 2/sqrt(2*log(2));				 
 stdblk  = prod(dim([1 2])/2);
 thr     = 2;
-rad     = 30;
+rad     = 5;
 NIFTI_dir = fullfile(pwd,SvNm);
 
 if ~isdir(NIFTI_dir)
@@ -99,8 +99,7 @@ supG_raw                         = zeros(nBoot,1);
 supG_observed                    = zeros(nBoot,1);
 
 % Creating a sphere of signal
-Sig = imtranslate(SpheroidSignal(wdim, 20, 3, 0),[-10,-25]) + imtranslate(SpheroidSignal(wdim, 15, 3,0),[20, -10]) + imtranslate(SpheroidSignal(wdim, 10, 3,0),[25, 13]) + ...
-      imtranslate(SpheroidSignal(wdim, 18, 3, 0),[-15,25]);
+Sig = SpheroidSignal(wdim, rad, mag, 0);
 
 % Smoothing the signal
 Sigs = zeros(wdim);
