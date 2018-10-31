@@ -1,4 +1,4 @@
-function Sim_32(nSubj,SvNm,nRlz)
+function Sim_41(nSubj,SvNm,nRlz)
 %
 % Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
 % for each of the proposed options
@@ -28,7 +28,7 @@ tau     = 1/sqrt(nSubj);
 nBoot   = 5000;
 dim     = [500 100]; 
 mag     = 3;
-smo     = 10;
+smo     = 3;
 rimFWHM = 15; 				 
 stdblk  = prod(dim([1 2])/2);
 thr     = 2;
@@ -90,6 +90,8 @@ upper_contour_observed_95_volume_prct_store                     = zeros(nRlz, 1)
 % This stores the vector SupG for each run
 supG_raw_store                   = zeros(nBoot, nRlz);
 supG_observed_store              = zeros(nBoot, nRlz);
+supG_monte_carlo_store           = zeros(1, nRlz); 
+supG_observed_monte_carlo_store  = zeros(1, nRlz); 
 
 %-These matrices store all the sets of interest during the bootstrap
 % method for all levels of smoothing
@@ -245,6 +247,20 @@ for t=1:nRlz
       % Residuals
       resid = bsxfun(@minus,observed_data,observed_mean);
       resid = spdiags(1./reshape(observed_std, [prod(dim) 1]), 0,prod(dim),prod(dim))*reshape(resid,[prod(dim) nSubj]);
+      
+      monte_carlo_lshift_boundary_values = abs(lshift_w1.*resid(lshift) + lshift_w2.*resid(lshift(:,[dim(2) 1:dim(2)-1])));
+      monte_carlo_rshift_boundary_values = abs(rshift_w1.*resid(rshift) + rshift_w2.*resid(rshift(:,[2:dim(2) 1])));
+      monte_carlo_ushift_boundary_values = abs(ushift_w1.*resid(ushift) + ushift_w2.*resid(ushift([dim(1) 1:dim(1)-1],:)));
+      monte_carlo_dshift_boundary_values = abs(dshift_w1.*resid(dshift) + dshift_w2.*resid(dshift([2:dim(1) 1],:)));
+      supG_monte_carlo_store(t)          = max([monte_carlo_lshift_boundary_values; monte_carlo_rshift_boundary_values; monte_carlo_ushift_boundary_values; monte_carlo_dshift_boundary_values]);
+      
+      monte_carlo_observed_lshift_boundary_values = abs(observed_lshift_w1.*resid(observed_lshift) + observed_lshift_w2.*resid(observed_lshift(:,[dim(2) 1:dim(2)-1])));
+      monte_carlo_observed_rshift_boundary_values = abs(observed_rshift_w1.*resid(observed_rshift) + observed_rshift_w2.*resid(observed_rshift(:,[2:dim(2) 1])));
+      monte_carlo_observed_ushift_boundary_values = abs(observed_ushift_w1.*resid(observed_ushift) + observed_ushift_w2.*resid(observed_ushift([dim(1) 1:dim(1)-1],:)));
+      monte_carlo_observed_dshift_boundary_values = abs(observed_dshift_w1.*resid(observed_dshift) + observed_dshift_w2.*resid(observed_dshift([2:dim(1) 1],:)));
+      supG_observed_monte_carlo_store(t)          = max([monte_carlo_observed_lshift_boundary_values; monte_carlo_observed_rshift_boundary_values; monte_carlo_observed_ushift_boundary_values; monte_carlo_observed_dshift_boundary_values]);
+      
+      resid = reshape(resid, [prod(dim) nSubj]);
             
       % Implementing the Multiplier Boostrap to obtain confidence intervals
       for k=1:nBoot 
@@ -663,7 +679,7 @@ eval(['save ' SvNm ' nSubj nRlz dim smo mag rimFWHM thr nBoot '...
       'mid_subset_lower_raw_80_store mid_subset_lower_raw_90_store mid_subset_lower_raw_95_store mid_subset_lower_observed_80_store mid_subset_lower_observed_90_store mid_subset_lower_observed_95_store '...
       'subset_success_vector_raw_80 subset_success_vector_raw_90 subset_success_vector_raw_95 subset_success_vector_observed_80 subset_success_vector_observed_90 subset_success_vector_observed_95 subset_success_vector_raw_80_alternate subset_success_vector_raw_90_alternate subset_success_vector_raw_95_alternate subset_success_vector_observed_80_alternate subset_success_vector_observed_90_alternate subset_success_vector_observed_95_alternate '...
       'percentage_success_vector_raw_80 percentage_success_vector_raw_90 percentage_success_vector_raw_95 percentage_success_vector_observed_80 percentage_success_vector_observed_90 percentage_success_vector_observed_95 percentage_success_vector_raw_80_alternate percentage_success_vector_raw_90_alternate percentage_success_vector_raw_95_alternate percentage_success_vector_observed_80_alternate percentage_success_vector_observed_90_alternate percentage_success_vector_observed_95_alternate '...
-      'supG_raw_store supG_observed_store '...
+      'supG_raw_store supG_observed_store supG_monte_carlo_store supG_observed_monte_carlo_store '...
       'middle_contour_volume '...
       'lower_contour_raw_80_volume_prct_store lower_contour_raw_90_volume_prct_store lower_contour_raw_95_volume_prct_store lower_contour_observed_80_volume_prct_store lower_contour_observed_90_volume_prct_store lower_contour_observed_95_volume_prct_store '...
       'upper_contour_raw_80_volume_prct_store upper_contour_raw_90_volume_prct_store upper_contour_raw_95_volume_prct_store upper_contour_observed_80_volume_prct_store upper_contour_observed_90_volume_prct_store upper_contour_observed_95_volume_prct_store'])
