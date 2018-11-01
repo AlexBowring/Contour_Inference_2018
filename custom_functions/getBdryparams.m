@@ -12,14 +12,14 @@ function [bdry_params] = getBdryparams(field, c, connectivity)
 %Output:
 % bdry_params is a struct containing the edge locations either side of the
 % true continuous boundary where the field = c, as well as the weights that
-% the adjacent voxels need to be multiplied by to give the precise location where the 
-% field = c assuming that the gradient of the signal is linear between adjacent
+% the adjA_cent voxels need to be multiplied by to give the precise location where the 
+% field = c assuming that the gradient of the signal is linear between adjA_cent
 % voxels. 
 %
 %__________________________________________________________________________
 % References:
 %__________________________________________________________________________
-% Author: Alex Bowring (alex.bowring@bdi.ox.ac.uk)
+% Author: Alex Bowring (alex.bowring@bdi.ox.A_c.uk)
 % Last changes: 10/25/2018
 %__________________________________________________________________________
 
@@ -97,7 +97,7 @@ switch D
             rshift(:,2:end,:) = horz;
             rshift            = rshift & ~A_c;
             % Signal locations to be used with rshift edges
-            rshift_sig        = rshift(:,[2:dim(2) 1],:)
+            rshift_sig        = rshift(:,[2:dim(2) 1],:);
             %%%%%% Vertical edges (note that this uses the matlab image nomenclature,
             %%%%%% usually the first component might be called horizontal)
             vert = A_c(1:end-1,:,:) | A_c(2:end,:,:);
@@ -112,10 +112,10 @@ switch D
             dshift(2:end,:,:)   = vert;
             dshift = dshift & ~A_c;
             % Signal locations to be used with dshift edges
-            dshift_sig = dshift([2:dim(1) 1],:,:)
+            dshift_sig = dshift([2:dim(1) 1],:,:);
             %%%%%% depth edges
             depth = A_c(:,:,1:end-1) | A_c(:,:,2:end);
-            %%% Compute the back shifted depth edges
+            %%% Compute the bA_ck shifted depth edges
             bshift = A_c;
             bshift(:,:,1:end-1) = depth;
             bshift = bshift & ~A_c;
@@ -168,9 +168,9 @@ switch D
             %%%%%% usually the second component might be called vertical)
             horz = A_c(:,2:end,:) | A_c(:,1:end-1,:);
             %%% Compute the left shifted horizontal edges
-            lshift                                = AC; % initialize
+            lshift                                = A_c; % initialize
             lshift(:,1:end-1,:)                   = horz;
-            lshift                                = lshift & ~AC;
+            lshift                                = lshift & ~A_c;
             % Signal locations to be used with lshift edges
             lshift_sig                            = lshift(:,[dim(2) 1:dim(2)-1],:);
             %% Compute left and vertically shifted edges
@@ -178,41 +178,41 @@ switch D
             % Left and up shifted
             lshift_ushift                         = lshift;
             lshift_ushift(1:end-1,:,:)            = lshift_vert;
-            lshift_ushift                         = lshift_ushift & ~AC & ~lshift;
+            lshift_ushift                         = lshift_ushift & ~A_c & ~lshift;
             % Signal locations to be used with lshift_ushift edges
             lshift_ushift_sig                     = lshift_ushift([dim(1) 1:dim(1)-1],[dim(2) 1:dim(2)-1],:); 
             % Left and down shifted
             lshift_dshift                         = lshift;
             lshift_dshift(2:end,:,:)              = lshift_vert;
-            lshift_dshift                         = lshift_dshift & ~AC & ~lshift;
+            lshift_dshift                         = lshift_dshift & ~A_c & ~lshift;
             % Signal locations to be used with lshift_dshift edges
             lshift_dshift_sig                     = lshift_dshift([2:dim(1) 1],[dim(2) 1:dim(2)-1],:);
             %% Compute left and depth shifted edges
             lshift_depth                          = lshift(:,:,1:end-1) | lshift(:,:,2:end);
-            % Left and back shifted
+            % Left and bA_ck shifted
             lshift_bshift                         = lshift;
             lshift_bshift(:,:,1:end-1)            = lshift_depth;
-            lshift_bshift                         = lshift_bshift & ~AC & ~lshift;
+            lshift_bshift                         = lshift_bshift & ~A_c & ~lshift;
             % Signal locations to be used with lshift_bshift edges
             lshift_bshift_sig                     = lshift_bshift(:,[dim(2) 1:dim(2)-1],[dim(3) 1:dim(3)-1]);
             % Left and front shifted 
             lshift_fshift                         = lshift;
             lshift_fshift(:,:,2:end)              = lshift_depth;
-            lshift_fshift                         = lshift_fshift & ~AC & ~lshift;
+            lshift_fshift                         = lshift_fshift & ~A_c & ~lshift;
             % Signal locations to be used with lshift_fshift edges
             lshift_fshift_sig                     = lshift_fshift(:,[dim(2) 1:dim(2)-1],[2:dim(3) 1]);
-            %% Compute left, back, and vertically shifted edges
+            %% Compute left, bA_ck, and vertically shifted edges
             lshift_bshift_vert                    = lshift_bshift(1:end-1,:,:) | lshift_bshift(2:end,:,:);
-            % Left, back, and up shifted
+            % Left, bA_ck, and up shifted
             lshift_bshift_ushift                  = lshift_bshift;
             lshift_bshift_ushift(1:end-1,:,:)     = lshift_bshift_vert;
-            lshift_bshift_ushift                  = lshift_bshift_ushift & ~AC & ~lshift_bshift;
+            lshift_bshift_ushift                  = lshift_bshift_ushift & ~A_c & ~lshift_bshift;
             % Signal locations to be used with lshift_bshift_ushift edges
             lshift_bshift_ushift_sig              = lshift_bshift_ushift([dim(1) 1:dim(1)-1],[dim(2) 1:dim(2)-1],[dim(3) 1:dim(3)-1]);
-            % Left, back, and down shifted
+            % Left, bA_ck, and down shifted
             lshift_bshift_dshift                  = lshift_bshift;
             lshift_bshift_dshift(2:end,:,:)       = lshift_bshift_vert;
-            lshift_bshift_dshift                  = lshift_bshift_dshift & ~AC & ~lshift_bshift;
+            lshift_bshift_dshift                  = lshift_bshift_dshift & ~A_c & ~lshift_bshift;
             % Signal locations to be used with lshift_bshift_dshift edges
             lshift_bshift_dshift_sig              = lshift_bshift_dshift([2:dim(1) 1],[dim(2) 1:dim(2)-1],[dim(3) 1:dim(3)-1]); 
             %% Compute left, front, and vertically shifted edges
@@ -220,13 +220,13 @@ switch D
             % Left, front, and up shifted
             lshift_fshift_ushift                  = lshift_fshift;
             lshift_fshift_ushift(1:end-1,:,:)     = lshift_fshift_vert;
-            lshift_fshift_ushift                  = lshift_fshift_ushift & ~AC & ~lshift_fshift;
+            lshift_fshift_ushift                  = lshift_fshift_ushift & ~A_c & ~lshift_fshift;
             % Signal locations to be used with lshift_fshift_ushift edges
             lshift_fshift_ushift_sig              = lshift_fshift_ushift([dim(1) 1:dim(1)-1],[dim(2) 1:dim(2)-1],[2:dim(3) 1]);
             % Left, front, and down shifted
             lshift_fshift_dshift                  = lshift_fshift;
             lshift_fshift_dshift(2:end,:,:)       = lshift_fshift_vert;
-            lshift_fshift_dshift                  = lshift_fshift_dshift & ~AC & ~lshift_fshift;
+            lshift_fshift_dshift                  = lshift_fshift_dshift & ~A_c & ~lshift_fshift;
             % Signal locations to be used with lshift_fshift_dshift edges
             lshift_fshift_dshift_sig              = lshift_fshift_dshift([2:dim(1) 1],[dim(2) 1:dim(2)-1],[2:dim(3) 1]);  
             
@@ -235,47 +235,47 @@ switch D
             rshift(:,2:end,:) = horz;
             rshift            = rshift & ~A_c;
             % Signal locations to be used with rshift edges
-            rshift_sig        = rshift(:,[2:dim(2) 1],:)
+            rshift_sig        = rshift(:,[2:dim(2) 1],:);
             %% Compute right and vertically shifted edges
             rshift_vert                           = rshift(1:end-1,:,:) | rshift(2:end,:,:);
             % Right and up shifted
             rshift_ushift                         = rshift;
             rshift_ushift(1:end-1,:,:)            = rshift_vert;
-            rshift_ushift                         = rshift_ushift & ~AC & ~rshift;
+            rshift_ushift                         = rshift_ushift & ~A_c & ~rshift;
             % Signal locations to be used with rshift_ushift edges
             rshift_ushift_sig                     = rshift_ushift([dim(1) 1:dim(1)-1],[2:dim(2) 1],:); 
             % Right and down shifted
             rshift_dshift                         = rshift;
             rshift_dshift(2:end,:,:)              = rshift_vert;
-            rshift_dshift                         = rshift_dshift & ~AC & ~rshift;
+            rshift_dshift                         = rshift_dshift & ~A_c & ~rshift;
             % Signal locations to be used with rshift_dshift edges
             rshift_dshift_sig                     = rshift_dshift([2:dim(1) 1],[2:dim(2) 1],:);
             %% Compute right and depth shifted edges
             rshift_depth                          = rshift(:,:,1:end-1) | rshift(:,:,2:end);
-            % Right and back shifted
+            % Right and bA_ck shifted
             rshift_bshift                         = rshift;
             rshift_bshift(:,:,1:end-1)            = rshift_depth;
-            rshift_bshift                         = rshift_bshift & ~AC & ~rshift;
+            rshift_bshift                         = rshift_bshift & ~A_c & ~rshift;
             % Signal locations to be used with rshift_bshift edges
             rshift_bshift_sig                     = rshift_bshift(:,[2:dim(2) 1],[dim(3) 1:dim(3)-1]);
             % Right and front shifted 
             rshift_fshift                         = rshift;
             rshift_fshift(:,:,2:end)              = rshift_depth;
-            rshift_fshift                         = rshift_fshift & ~AC & ~rshift;
+            rshift_fshift                         = rshift_fshift & ~A_c & ~rshift;
             % Signal locations to be used with rshift_fshift edges
             rshift_fshift_sig                     = rshift_fshift(:,[2:dim(2) 1],[2:dim(3) 1]); 
-            %% Compute right, back, and vertically shifted edges
+            %% Compute right, bA_ck, and vertically shifted edges
             rshift_bshift_vert                    = rshift_bshift(1:end-1,:,:) | rshift_bshift(2:end,:,:);
-            % right, back, and up shifted
+            % right, bA_ck, and up shifted
             rshift_bshift_ushift                  = rshift_bshift;
             rshift_bshift_ushift(1:end-1,:,:)     = rshift_bshift_vert;
-            rshift_bshift_ushift                  = rshift_bshift_ushift & ~AC & ~rshift_bshift;
+            rshift_bshift_ushift                  = rshift_bshift_ushift & ~A_c & ~rshift_bshift;
             % Signal locations to be used with rshift_bshift_ushift edges
             rshift_bshift_ushift_sig              = rshift_bshift_ushift([dim(1) 1:dim(1)-1],[2:dim(2) 1],[dim(3) 1:dim(3)-1]);
-            % right, back, and down shifted
+            % right, bA_ck, and down shifted
             rshift_bshift_dshift                  = rshift_bshift;
             rshift_bshift_dshift(2:end,:,:)       = rshift_bshift_vert;
-            rshift_bshift_dshift                  = rshift_bshift_dshift & ~AC & ~rshift_bshift;
+            rshift_bshift_dshift                  = rshift_bshift_dshift & ~A_c & ~rshift_bshift;
             % Signal locations to be used with rshift_bshift_dshift edges
             rshift_bshift_dshift_sig              = rshift_bshift_dshift([2:dim(1) 1],[2:dim(2) 1],[dim(3) 1:dim(3)-1]); 
             %% Compute right, front, and vertically shifted edges
@@ -283,13 +283,13 @@ switch D
             % Right, front, and up shifted
             rshift_fshift_ushift                  = rshift_fshift;
             rshift_fshift_ushift(1:end-1,:,:)     = rshift_fshift_vert;
-            rshift_fshift_ushift                  = rshift_fshift_ushift & ~AC & ~rshift_fshift;
+            rshift_fshift_ushift                  = rshift_fshift_ushift & ~A_c & ~rshift_fshift;
             % Signal locations to be used with rshift_fshift_ushift edges
             rshift_fshift_ushift_sig              = rshift_fshift_ushift([dim(1) 1:dim(1)-1],[2:dim(2) 1],[2:dim(3) 1]);
             % Right, front, and down shifted
             rshift_fshift_dshift                  = rshift_fshift;
             rshift_fshift_dshift(2:end,:,:)       = rshift_fshift_vert;
-            rshift_fshift_dshift                  = rshift_fshift_dshift & ~AC & ~rshift_fshift;
+            rshift_fshift_dshift                  = rshift_fshift_dshift & ~A_c & ~rshift_fshift;
             % Signal locations to be used with rshift_fshift_dshift edges
             rshift_fshift_dshift_sig              = rshift_fshift_dshift([2:dim(1) 1],[2:dim(2) 1],[2:dim(3) 1]); 
 
@@ -304,16 +304,16 @@ switch D
             ushift_sig = ushift([dim(1) 1:dim(1)-1],:,:);
             %% Compute up and depth shifted edges
             ushift_depth                          = ushift(:,:,1:end-1) | ushift(:,:,2:end);
-            % Up and back shifted
+            % Up and bA_ck shifted
             ushift_bshift                         = ushift;
             ushift_bshift(:,:,1:end-1)            = ushift_depth;
-            ushift_bshift                         = ushift_bshift & ~AC & ~ushift;
+            ushift_bshift                         = ushift_bshift & ~A_c & ~ushift;
             % Signal locations to be used with ushift_bshift edges
             ushift_bshift_sig                     = ushift_bshift([dim(1) 1:dim(1)-1],:,[dim(3) 1:dim(3)-1]);
             % Up and front shifted 
             ushift_fshift                         = ushift;
             ushift_fshift(:,:,2:end)              = ushift_depth;
-            ushift_fshift                         = ushift_fshift & ~AC & ~ushift;
+            ushift_fshift                         = ushift_fshift & ~A_c & ~ushift;
             % Signal locations to be used with ushift_fshift edges
             ushift_fshift_sig                     = ushift_fshift([dim(1) 1:dim(1)-1],:,[2:dim(3) 1]); 
 
@@ -321,26 +321,26 @@ switch D
             dshift = A_c;
             dshift(2:end,:,:)   = vert;
             dshift = dshift & ~A_c;
-            Signal locations to be used with dshift edges 
+            % Signal locations to be used with dshift edges 
             dshift_sig = dshift([2:dim(1) 1],:,:);
             %% Compute down and depth shifted edges
             dshift_depth                          = dshift(:,:,1:end-1) | dshift(:,:,2:end);
-            % Down and back shifted
+            % Down and bA_ck shifted
             dshift_bshift                         = dshift;
             dshift_bshift(:,:,1:end-1)            = dshift_depth;
-            dshift_bshift                         = dshift_bshift & ~AC & ~dshift;
+            dshift_bshift                         = dshift_bshift & ~A_c & ~dshift;
             % Signal locations to be used with dshift_bshift edges
             dshift_bshift_sig                     = dshift_bshift([2:dim(1) 1],:,[dim(3) 1:dim(3)-1]);
             % Down and front shifted 
             dshift_fshift                         = dshift;
             dshift_fshift(:,:,2:end)              = dshift_depth;
-            dshift_fshift                         = dshift_fshift & ~AC & ~dshift;
+            dshift_fshift                         = dshift_fshift & ~A_c & ~dshift;
             % Signal locations to be used with dshift_fshift edges
             dshift_fshift_sig                     = dshift_fshift([2:dim(1) 1],:,[2:dim(3) 1]); 
 
             %%%%%% depth edges
             depth = A_c(:,:,1:end-1) | A_c(:,:,2:end);
-            %%% Compute the back shifted depth edges
+            %%% Compute the bA_ck shifted depth edges
             bshift = A_c;
             bshift(:,:,1:end-1) = depth;
             bshift = bshift & ~A_c;
@@ -454,7 +454,7 @@ switch D
                                  'lshift_fshift', struct('edges', lshift_fshift, 'sig_edges', lshift_fshift_sig, 'w1', lshift_fshift_w1,'w2', lshift_fshift_w2), ...
                                  'lshift_bshift_ushift', struct('edges', lshift_bshift_ushift, 'sig_edges', lshift_bshift_ushift_sig, 'w1', lshift_bshift_ushift_w1,'w2', lshift_bshift_ushift_w2), ...
                                  'lshift_bshift_dshift', struct('edges', lshift_bshift_dshift, 'sig_edges', lshift_bshift_dshift_sig, 'w1', lshift_bshift_dshift_w1,'w2', lshift_bshift_dshift_w2), ...
-                                 'lshift_fshift_ushift', struct('edges', lshift_bshift_ushift, 'sig_edges', lshift_bshift_ushift_sig, 'w1', lshift_bshift_ushift_w1,'w2', lshift_bshift_ushift_w2), ...
+                                 'lshift_fshift_ushift', struct('edges', lshift_fshift_ushift, 'sig_edges', lshift_fshift_ushift_sig, 'w1', lshift_fshift_ushift_w1,'w2', lshift_fshift_ushift_w2), ...
                                  'lshift_fshift_dshift', struct('edges', lshift_fshift_dshift, 'sig_edges', lshift_fshift_dshift_sig, 'w1', lshift_fshift_dshift_w1,'w2', lshift_fshift_dshift_w2), ...
                                  'rshift', struct('edges', rshift, 'sig_edges', rshift_sig, 'w1', rshift_w1,'w2', rshift_w2), ...
                                  'rshift_ushift', struct('edges', rshift_ushift, 'sig_edges', rshift_ushift_sig, 'w1', rshift_ushift_w1,'w2', rshift_ushift_w2), ...
@@ -463,7 +463,7 @@ switch D
                                  'rshift_fshift', struct('edges', rshift_fshift, 'sig_edges', rshift_fshift_sig, 'w1', rshift_fshift_w1,'w2', rshift_fshift_w2), ...
                                  'rshift_bshift_ushift', struct('edges', rshift_bshift_ushift, 'sig_edges', rshift_bshift_ushift_sig, 'w1', rshift_bshift_ushift_w1,'w2', rshift_bshift_ushift_w2), ...
                                  'rshift_bshift_dshift', struct('edges', rshift_bshift_dshift, 'sig_edges', rshift_bshift_dshift_sig, 'w1', rshift_bshift_dshift_w1,'w2', rshift_bshift_dshift_w2), ...
-                                 'rshift_fshift_ushift', struct('edges', rshift_bshift_ushift, 'sig_edges', rshift_bshift_ushift_sig, 'w1', rshift_bshift_ushift_w1,'w2', rshift_bshift_ushift_w2), ...
+                                 'rshift_fshift_ushift', struct('edges', rshift_fshift_ushift, 'sig_edges', rshift_fshift_ushift_sig, 'w1', rshift_fshift_ushift_w1,'w2', rshift_fshift_ushift_w2), ...
                                  'rshift_fshift_dshift', struct('edges', rshift_fshift_dshift, 'sig_edges', rshift_fshift_dshift_sig, 'w1', rshift_fshift_dshift_w1,'w2', rshift_fshift_dshift_w2), ...
                                  'ushift', struct('edges', ushift, 'sig_edges', ushift_sig, 'w1', ushift_w1,'w2', ushift_w2), ...
                                  'ushift_bshift', struct('edges', ushift_bshift, 'sig_edges', ushift_bshift_sig, 'w1', ushift_bshift_w1,'w2', ushift_bshift_w2), ...
@@ -473,6 +473,6 @@ switch D
                                  'dshift_fshift', struct('edges', dshift_fshift, 'sig_edges', dshift_fshift_sig, 'w1', dshift_fshift_w1,'w2', dshift_fshift_w2), ...
                                  'bshift', struct('edges', bshift, 'sig_edges', bshift_sig, 'w1', bshift_w1,'w2', bshift_w2), ...
                                  'fshift', struct('edges', fshift, 'sig_edges', fshift_sig, 'w1', fshift_w1,'w2', fshift_w2)); 
-end
+        end
 end
 

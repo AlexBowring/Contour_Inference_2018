@@ -33,7 +33,6 @@ switch D
         bdry_values = [lshift_bdry_values; rshift_bdry_values; ushift_bdry_values; dshift_bdry_values];
 
     case 3
-
         switch connectivity
             case 0 
             %%%%% Linear Interpolation onto the boundary
@@ -44,7 +43,7 @@ switch D
             bshift_bdry_values = bdry_params.bshift.w1.*field(bdry_params.bshift.edges) + bdry_params.bshift.w2.*field(bdry_params.bshift.sig_edges);
             fshift_bdry_values = bdry_params.fshift.w1.*field(bdry_params.fshift.edges) + bdry_params.fshift.w2.*field(bdry_params.fshift.sig_edges);
             
-            bdry_values = [lshift_bdry_values; rshift_bdry_values; ushift_bdry_values; dshift_bdry_values, bshift_bdry_values, fshift_bdry_values];
+            bdry_values = [lshift_bdry_values; rshift_bdry_values; ushift_bdry_values; dshift_bdry_values; bshift_bdry_values; fshift_bdry_values];
 
             case 1
             %%%%% Linear Interpolation onto the boundary
@@ -82,7 +81,7 @@ switch D
                            ushift_bdry_values; ushift_bshift_bdry_values; ushift_fshift_bdry_values; dshift_bdry_values; dshift_bshift_bdry_values; dshift_fshift_bdry_values; ...
                            bshift_bdry_values; fshift_bdry_values];
 
-end
+        end
 end 
    
      
