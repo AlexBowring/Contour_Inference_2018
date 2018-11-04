@@ -1,4 +1,4 @@
-function [bdry_params] = getBdryparams(field, c, connectivity)
+function [bdry_params] = getBdryparams(field, c, connectivity, a)
 
 % Finds edges and weights needed to linearly interpolate a discretized field 
 % to find the locations where the true continuous field = c
@@ -38,10 +38,14 @@ switch D
         lshift            = A_c; % initialize
         lshift(:,1:end-1) = horz;
         lshift            = lshift & ~A_c;
+        % Signal locations to be used with lshift edges
+        lshift_sig        = lshift(:,[dim(2) 1:dim(2)-1]);
         %%% Compute the right shifted horizontal edges
         rshift          = A_c; % initialize
         rshift(:,2:end) = horz;
         rshift          = rshift & ~A_c;
+        % Signal locations to be used with rshift edges
+        rshift_sig      = rshift(:,[2:dim(2) 1]);
         %%%%%% Vertical edges (note that this uses the matlab image nomenclature,
         %%%%%% usually the first component might be called horizontal)
         vert = A_c(1:end-1,:) | A_c(2:end,:);
@@ -49,35 +53,64 @@ switch D
         ushift = A_c;
         ushift(1:end-1,:) = vert;
         ushift = ushift & ~A_c;
+        % Signal locations to be used with ushift edges
+        ushift_sig      = ushift([dim(1) 1:dim(1)-1],:);
         %%% Compute the down shifted vertical edges
         dshift = A_c;
         dshift(2:end,:)   = vert;
         dshift = dshift & ~A_c;
+        % Signal locations to be used with dshift edges
+        dshift_sig      = dshift([2:dim(1) 1],:);
         
         % Computing the weights for the weighted linear boundary of the
         % field
-        lshift_w1 = abs(field(lshift(:,[dim(2) 1:dim(2)-1])) - c)./abs(field(lshift) - field(lshift(:,[dim(2) 1:dim(2)-1])));
-        lshift_w2 = abs(field(lshift) - c)./abs(field(lshift) - field(lshift(:,[dim(2) 1:dim(2)-1])));
+        lshift_w1 = abs(field(lshift_sig) - c)./abs(field(lshift) - field(lshift_sig));
+        lshift_w2 = abs(field(lshift) - c)./abs(field(lshift) - field(lshift_sig));
 
-        rshift_w1 = abs(field(rshift(:,[2:dim(2) 1])) - c)./abs(field(rshift) - field(rshift(:,[2:dim(2) 1])));
-        rshift_w2 = abs(field(rshift) - c)./abs(field(rshift) - field(rshift(:,[2:dim(2) 1])));
+        rshift_w1 = abs(field(rshift_sig) - c)./abs(field(rshift) - field(rshift_sig));
+        rshift_w2 = abs(field(rshift) - c)./abs(field(rshift) - field(rshift_sig));
 
-        ushift_w1 = abs(field(ushift([dim(1) 1:dim(1)-1],:)) - c)./abs(field(ushift) - field(ushift([dim(1) 1:dim(1)-1],:)));
-        ushift_w2 = abs(field(ushift) - c)./abs(field(ushift) - field(ushift([dim(1) 1:dim(1)-1],:)));
+        ushift_w1 = abs(field(ushift_sig) - c)./abs(field(ushift) - field(ushift_sig));
+        ushift_w2 = abs(field(ushift) - c)./abs(field(ushift) - field(ushift_sig));
 
-        dshift_w1 = abs(field(dshift([2:dim(1) 1],:)) - c)./abs(field(dshift) - field(dshift([2:dim(1) 1],:)));
-        dshift_w2 = abs(field(dshift) - c)./abs(field(dshift) - field(dshift([2:dim(1) 1],:)));
+        dshift_w1 = abs(field(dshift_sig) - c)./abs(field(dshift) - field(dshift_sig));
+        dshift_w2 = abs(field(dshift) - c)./abs(field(dshift) - field(dshift_sig));
         
-        % Compute the length of the boundary
-        len    = length(lshift_w1) + length(rshift_w1) + length(ushift_w1) + length(dshift_w1);
-        
-        % Storing parameters in a structure
-        bdry_params = struct('length', len, ...
-                             'lshift', struct('edges', lshift, 'w1', lshift_w1,'w2', lshift_w2), ...
-                             'rshift', struct('edges', rshift, 'w1', rshift_w1,'w2', rshift_w2), ...
-                             'ushift', struct('edges', ushift, 'w1', ushift_w1,'w2', ushift_w2), ...
-                             'dshift', struct('edges', dshift ,'w1', dshift_w1,'w2', dshift_w2));
-                         
+        switch a 
+            case 0
+                % Compute the length of the boundary
+                len    = length(lshift_w1) + length(rshift_w1) + length(ushift_w1) + length(dshift_w1);
+                
+                % Storing parameters in a structure
+                bdry_params = struct('length', len, ...
+                                     'lshift', struct('edges', lshift, 'sig_edges', lshift_sig, 'w1', lshift_w1,'w2', lshift_w2), ...
+                                     'rshift', struct('edges', rshift, 'sig_edges', rshift_sig, 'w1', rshift_w1,'w2', rshift_w2), ...
+                                     'ushift', struct('edges', ushift, 'sig_edges', ushift_sig, 'w1', ushift_w1,'w2', ushift_w2), ...
+                                     'dshift', struct('edges', dshift, 'sig_edges', dshift_sig, 'w1', dshift_w1,'w2', dshift_w2));
+
+            case 1
+                lshift_w2(lshift_w1 < 0.5) = 0; 
+                lshift_w1(lshift_w1 < 0.5) = 1; 
+                
+                rshift_w2(rshift_w1 < 0.5) = 0; 
+                rshift_w1(rshift_w1 < 0.5) = 1; 
+                
+                ushift_w2(ushift_w1 < 0.5) = 0; 
+                ushift_w1(ushift_w1 < 0.5) = 1; 
+                
+                dshift_w2(dshift_w1 < 0.5) = 0; 
+                dshift_w1(dshift_w1 < 0.5) = 1; 
+                                
+                % Compute the length of the boundary
+                len    = length(lshift_w1) + length(rshift_w1) + length(ushift_w1) + length(dshift_w1);
+                
+                % Storing parameters in a structure
+                bdry_params = struct('length', len, ...
+                                     'lshift', struct('edges', lshift, 'sig_edges', lshift_sig, 'w1', lshift_w1,'w2', lshift_w2), ...
+                                     'rshift', struct('edges', rshift, 'sig_edges', rshift_sig, 'w1', rshift_w1,'w2', rshift_w2), ...
+                                     'ushift', struct('edges', ushift, 'sig_edges', ushift_sig, 'w1', ushift_w1,'w2', ushift_w2), ...
+                                     'dshift', struct('edges', dshift, 'sig_edges', dshift_sig, 'w1', dshift_w1,'w2', dshift_w2));
+        end          
     case 3
 
         switch connectivity
@@ -148,20 +181,57 @@ switch D
             fshift_w1 = abs(field(fshift_sig) - c)./abs(field(fshift) - field(fshift_sig));
             fshift_w2 = abs(field(fshift) - c)./abs(field(fshift) - field(fshift_sig));
             
-            % Compute the length of the boundary
-            len    = length(lshift_w1) + length(rshift_w1) + length(ushift_w1) + length(dshift_w1) ...
-                       + length(bshift_w1) + length(fshift_w1);
-
             
-            % Create structure for storing parameters
-            bdry_params = struct('length', len, ...
-                                 'lshift', struct('edges', lshift, 'sig_edges', lshift_sig, 'w1', lshift_w1,'w2', lshift_w2), ...
-                                 'rshift', struct('edges', rshift, 'sig_edges', rshift_sig, 'w1', rshift_w1,'w2', rshift_w2), ...
-                                 'ushift', struct('edges', ushift, 'sig_edges', ushift_sig, 'w1', ushift_w1,'w2', ushift_w2), ...
-                                 'dshift', struct('edges', dshift, 'sig_edges', dshift_sig, 'w1', dshift_w1,'w2', dshift_w2), ...
-                                 'bshift', struct('edges', bshift, 'sig_edges', bshift_sig, 'w1', bshift_w1,'w2', bshift_w2), ...
-                                 'fshift', struct('edges', fshift, 'sig_edges', fshift_sig, 'w1', fshift_w1,'w2', fshift_w2)); 
+            switch a 
+                case 0
+                    % Compute the length of the boundary
+                    len    = length(lshift_w1) + length(rshift_w1) + length(ushift_w1) + length(dshift_w1) ...
+                               + length(bshift_w1) + length(fshift_w1);
 
+
+                    % Create structure for storing parameters
+                    bdry_params = struct('length', len, ...
+                                         'lshift', struct('edges', lshift, 'sig_edges', lshift_sig, 'w1', lshift_w1,'w2', lshift_w2), ...
+                                         'rshift', struct('edges', rshift, 'sig_edges', rshift_sig, 'w1', rshift_w1,'w2', rshift_w2), ...
+                                         'ushift', struct('edges', ushift, 'sig_edges', ushift_sig, 'w1', ushift_w1,'w2', ushift_w2), ...
+                                         'dshift', struct('edges', dshift, 'sig_edges', dshift_sig, 'w1', dshift_w1,'w2', dshift_w2), ...
+                                         'bshift', struct('edges', bshift, 'sig_edges', bshift_sig, 'w1', bshift_w1,'w2', bshift_w2), ...
+                                         'fshift', struct('edges', fshift, 'sig_edges', fshift_sig, 'w1', fshift_w1,'w2', fshift_w2)); 
+
+                case 1
+                    lshift_w2(lshift_w1 < 0.5) = 0; 
+                    lshift_w1(lshift_w1 < 0.5) = 1; 
+
+                    rshift_w2(rshift_w1 < 0.5) = 0; 
+                    rshift_w1(rshift_w1 < 0.5) = 1; 
+
+                    ushift_w2(ushift_w1 < 0.5) = 0; 
+                    ushift_w1(ushift_w1 < 0.5) = 1; 
+
+                    dshift_w2(dshift_w1 < 0.5) = 0; 
+                    dshift_w1(dshift_w1 < 0.5) = 1; 
+                    
+                    bshift_w2(bshift_w1 < 0.5) = 0; 
+                    bshift_w1(bshift_w1 < 0.5) = 1; 
+                    
+                    fshift_w2(fshift_w1 < 0.5) = 0; 
+                    fshift_w1(fshift_w1 < 0.5) = 1;
+                    
+                    % Compute the length of the boundary
+                    len    = length(lshift_w1) + length(rshift_w1) + length(ushift_w1) + length(dshift_w1) ...
+                               + length(bshift_w1) + length(fshift_w1);
+
+
+                    % Create structure for storing parameters
+                    bdry_params = struct('length', len, ...
+                                         'lshift', struct('edges', lshift, 'sig_edges', lshift_sig, 'w1', lshift_w1,'w2', lshift_w2), ...
+                                         'rshift', struct('edges', rshift, 'sig_edges', rshift_sig, 'w1', rshift_w1,'w2', rshift_w2), ...
+                                         'ushift', struct('edges', ushift, 'sig_edges', ushift_sig, 'w1', ushift_w1,'w2', ushift_w2), ...
+                                         'dshift', struct('edges', dshift, 'sig_edges', dshift_sig, 'w1', dshift_w1,'w2', dshift_w2), ...
+                                         'bshift', struct('edges', bshift, 'sig_edges', bshift_sig, 'w1', bshift_w1,'w2', bshift_w2), ...
+                                         'fshift', struct('edges', fshift, 'sig_edges', fshift_sig, 'w1', fshift_w1,'w2', fshift_w2)); 
+            end
+            
             case 1
             %%%%%%%%%%%%%%%% Case 3D random field with 26-connectivity %%%%%%%%%%%%%%%%%
             %%%%%% Horizontal edges (note that this uses the matlab image nomenclature,
