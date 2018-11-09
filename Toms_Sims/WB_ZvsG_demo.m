@@ -18,21 +18,25 @@ set(0, 'DefaultFigureRenderer', 'painters');
 
 
 nSub=60;
-nVox=1000;
+nVox=10000;
 nB=1000;
 nMC=500;
 Alph=[0.8 0.9 0.95];
 
-Tstat=@(X)mean(X)./std(X)*sqrt(size(X,1));
+Tstat = @(X)mean(X)./std(X)*sqrt(size(X,1));
+Xbar  = @(X)mean(X)*sqrt(size(X,1));
+
 Tmax=@(X,df,nV)tcdf(X,df).^nV;
 
 Y=randn(nSub,nVox,nMC);
-MT=zeros(nB,nMC);
+[MTG,MTR]=deal(zeros(nB,nMC));
 
 MTG(1,:)=max(Tstat(Y));
 MTR(1,:)=MTG(1,:);
 
 for i=2:nB
+
+  res = (Y-mean(Y))./std(Y);
 
   fprintf('.')
 
