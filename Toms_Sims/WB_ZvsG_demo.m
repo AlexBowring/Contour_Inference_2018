@@ -42,18 +42,18 @@ MaxCDF=@(X,df,nV)tcdf(X,df).^nV;
 % Subjects x Voxels x Monte Carlo realisations
 Y=randn(nSub,nVox,nMC);
 
-% Outputs: Max stat MC & Bootstrap G & R
+% Outputs: MC sttistic Bootstrap G statistic, & R statistic
 MTMC = zeros(1,nMC);
 [MTG,MTR]=deal(zeros(nB,nMC));
 
 if Resid
   % If we center the original data for Monte Carlo, the statistic will be 
   % exactly zero, so we just scale
-  MTMC = deal(max(Stat(Y./std(Y))));
+  MTMC(:) = max(Stat(Y./std(Y)));
   % Now standardise for good
   Y = (Y-mean(Y))./std(Y);
 else
-  MTMC = deal(max(Stat(Y)));
+  MTMC(:) = max(Stat(Y));
 end
 
 for i=1:nB
@@ -95,26 +95,23 @@ set(gcf,'PaperSize',[4 3]*2.54,'PaperPosition',[0 0 [4 3]*2.54])
 h1=plot(sort(MTG),xxB);title('Gaussian')
 hold on;
 plot(prctile(MTG,95),0.95,'.','markersize',10)
-h=[abline('h',[0.8 0.9 0.95]);abline('v',[u80 u90 u95])];
-%set(h,'linestyle','-');
-uistack(h,'top')
 h2=plot(xx,MaxCDF(xx,df,nVox),'color',[0.8 0 0 ],'linewidth',2);
 h3=plot(sort(MTMC),xxMC,'--','color',[0.5 1 0.5],'linewidth',2);
 ylim([0.75 1]);xlim(MnMx)
-legend([h2 h3 h1(1)],'F_{Max} true','F_{Max} MC','F_{Max} Boot','location','southeast')
+h=[abline('h',[0.8 0.9 0.95]);abline('v',[u80 u90 u95])];%uistack(h,'top')
 hold off
+legend([h2 h3 h1(1)],'F_{Max} true','F_{Max} MC','F_{Max} Boot','location','southeast')
 print('-dpdf',['WB_Gauss_' fnm '.pdf']);
 
 h1=plot(sort(MTR),xxB);title('Rademacher')
 hold on;
 plot(prctile(MTR,95),0.95,'.','markersize',10)
-h=[abline('h',[0.8 0.9 0.95]);abline('v',[u80 u90 u95])];
-%set(h,'linestyle','-');
-uistack(h,'top')
 h2=plot(xx,MaxCDF(xx,df,nVox),'color',[0.8 0 0 ],'linewidth',2);
 h3=plot(sort(MTMC),xxMC,'--','color',[0.5 1 0.5],'linewidth',2);
 ylim([0.75 1]);xlim(MnMx)
+h=[abline('h',[0.8 0.9 0.95]);abline('v',[u80 u90 u95])];%uistack(h,'top')
 legend([h2 h3 h1(1)],'F_{Max} true','F_{Max} MC','F_{Max} Boot','location','southeast')
 hold off
 
 print('-dpdf',['WB_Rade_' fnm '.pdf']);
+keyboard
