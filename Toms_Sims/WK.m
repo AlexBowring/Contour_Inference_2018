@@ -11,15 +11,15 @@ nMC  = 50;
 % This is where we started
 Resid=true;
 JASA=true;
-WB_ZvsG_demo(nSub,nVox,nB,nMC,Resid,JASA)
+WB_ZvsG(nSub,nVox,nB,nMC,Resid,JASA)
 
 % This is what Fabian proposed
 Resid=true;
 JASA=false;
-WB_ZvsG_demo(nSub,nVox,nB,nMC,Resid,JASA)
+WB_ZvsG(nSub,nVox,nB,nMC,Resid,JASA)
 
 % This makes WB work optimally
 Resid=false;
 JASA=false;
-WB_ZvsG_demo(nSub,nVox,nB,nMC,Resid,JASA)
+WB_ZvsG(nSub,nVox,nB,nMC,Resid,JASA)
 
