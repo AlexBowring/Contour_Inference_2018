@@ -6,7 +6,7 @@ maxNumCompThreads(8);
 nSub = 60;
 nVox = 1000;
 nB   = 1000;
-nMC  = 50;
+nMC  = 1000;
 
 % This is where we started
 Resid=true;

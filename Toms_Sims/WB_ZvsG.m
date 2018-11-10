@@ -42,7 +42,7 @@ MaxCDF=@(X,df,nV)tcdf(X,df).^nV;
 % Subjects x Voxels x Monte Carlo realisations
 Y=randn(nSub,nVox,nMC);
 
-% Outputs: MC sttistic Bootstrap G statistic, & R statistic
+% Outputs: MC statistic Bootstrap G statistic, & R statistic
 MTMC = zeros(1,nMC);
 [MTG,MTR]=deal(zeros(nB,nMC));
 
@@ -114,4 +114,3 @@ legend([h2 h3 h1(1)],'F_{Max} true','F_{Max} MC','F_{Max} Boot','location','sout
 hold off
 
 print('-dpdf',['WB_Rade_' fnm '.pdf']);
-keyboard
