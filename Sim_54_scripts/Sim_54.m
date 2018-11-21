@@ -30,7 +30,8 @@ dim     = [100 100 100];
 mag     = 3;
 smo     = 3;
 rimFWHM = 2/sqrt(2*log(2)); 				 
-thr     = 0.25;
+thr     = 2;
+rad     = 5;
 NIFTI_dir = fullfile(pwd,SvNm);
 
 if ~isdir(NIFTI_dir)
