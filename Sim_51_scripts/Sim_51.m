@@ -1,8 +1,5 @@
-function Sim_46(nSubj,SvNm,nRlz)
-%
-% Creates a 2D images of linearly increasing signal from L to R, and then applies the standardized effects Contour Inference method
-% for each of the proposed options
-%
+function Sim_51(nSubj,SvNm,nRlz)
+
 
 
 %------------Starting Up initialization
@@ -24,15 +21,14 @@ end
 % nSubj  = 120;
 % nRlz = 300;
 
+Biobank_data_dir = '/storage/maullz/Contour_Inference_2018/Biobank_data';
 tau     = 1/sqrt(nSubj);
 nBoot   = 5000;
-dim     = [100 100 100]; 
-mag     = 3;
+dim     = [91 109 91]; 
 smo     = 3;
-rimFWHM = 2/sqrt(2*log(2));				 
-stdblk  = prod(dim([1 2])/2);
-thr     = 2;
-rad     = 30;
+mag     = 3;
+rimFWHM = 2/sqrt(2*log(2)); 				 
+thr     = 0.25;
 NIFTI_dir = fullfile(pwd,SvNm);
 
 if ~isdir(NIFTI_dir)
@@ -40,7 +36,7 @@ if ~isdir(NIFTI_dir)
 end
 %-----------Initialization of Some Variables
 V           = prod(dim);   
-wdim        = dim + ceil(rimFWHM*smo)*ones(1,3);  % Working image dimension
+wdim        = dim + 2*ceil(rimFWHM*smo)*ones(1,3);  % Working image dimension
 trunc_x     = {(ceil(rimFWHM*smo)+1):(ceil(rimFWHM*smo)+dim(1))};
 trunc_y     = {(ceil(rimFWHM*smo)+1):(ceil(rimFWHM*smo)+dim(2))};
 trunc_z     = {(ceil(rimFWHM*smo)+1):(ceil(rimFWHM*smo)+dim(3))};
@@ -99,17 +95,8 @@ supG_raw                         = zeros(nBoot,1);
 supG_observed                    = zeros(nBoot,1);
 
 % Creating a sphere of signal
-Sig = SpheroidSignal(wdim, rad, mag, 0);
-
-% Smoothing the signal
-Sigs = zeros(wdim);
-ss   = spm_smooth(Sig,Sigs,smo*ones(1,3));
-Sigs = Sigs;
-
-% Truncate to avoid edge effects
-tSigs          = Sigs(trnind{1}, trnind{2}, trnind{3});
-maxtSigs       = max(tSigs(:));
-Sig            = (mag/maxtSigs)*tSigs;
+Sig = spm_vol(fullfile(Biobank_data_dir,'fullmean_BOLD.nii'));
+Sig = spm_read_vols(Sig);
 
 % Uncomment to look at the Signal
 %imagesc(Sig); axis image; colorbar
@@ -177,6 +164,10 @@ x = spm_create_vol(x);
 x = spm_write_vol(x, zeros(dim));
 V = spm_vol(fullfile(NIFTI_dir,'empty.nii'));
 
+% Standard devation field of noise from Biobank data
+non_stationary_var = spm_vol(fullfile(Biobank_data_dir,'fullstd_BOLD.nii'));
+non_stationary_var = spm_read_vols(non_stationary_var);
+
 for t=1:nRlz
     fprintf('.');
     observed_mean = zeros(dim);
@@ -197,7 +188,8 @@ for t=1:nRlz
         %
         % Truncate to avoid edge effects
         %
-        tNoises = Noises(trnind{1},trnind{2},trnind{3});       
+        tNoises = Noises(trnind{1},trnind{2},trnind{3}); 
+        tNoises = tNoises.*non_stationary_var;
         tImgs = Sig + tNoises; % Creates the true image of smoothed signal + smoothed noise
         
         % Saving each subjects image as a NIFTI file
@@ -212,12 +204,11 @@ for t=1:nRlz
       
       observed_mean = observed_mean/nSubj;
 
-      observed_std = sqrt(abs(observed_std/nSubj - observed_mean.^2));
+      observed_std = sqrt(observed_std/nSubj - observed_mean.^2);
        
       % Making the three observed boundaries: dilated boundary, eroded
       % boundary, and dilated - eroded boundary.
       observed_AC = observed_mean >= thr;
-      observed_AC_volume = sum(observed_AC(:)); 
       
       % Making the interpolated boundary edges
       % Horizontal edges
@@ -320,7 +311,7 @@ for t=1:nRlz
           observed_boundary_resid_field     = sum(observed_boundary_bootstrap, 2)/sqrt(nSubj); 
           % Re-standardizing by bootstrap standard deviation
           observed_boot_std                 = std(observed_boundary_bootstrap, 0, 2);
-          observed_boundary_resid_field     = observed_boundary_resid_field./observed_boot_std; 
+          observed_boundary_resid_field     = observed_boundary_resid_field./observed_boot_std;
           
           supG_observed(k)                  = max(abs(observed_boundary_resid_field));
       end
