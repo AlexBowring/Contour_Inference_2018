@@ -127,3 +127,107 @@ set(gcf,'position', [-21,120,1195,682]);
 fh = gcf;
 set(fh,'color','w');
 export_fig(fh,fullfile(results_mat_dir,'Sig_2_coverage_results.pdf'))
+
+figure, clf
+for i = 1:length(nominal_vec)
+    subplot(2,3,i);
+    hold on
+    results = nominal_vec(i);
+    
+    for j = 1:2
+        signal = signal_vec(j);
+        [true_bdry_quant] = results_params.(results).(signal)(3,:);
+        [est_bdry_quant]  = results_params.(results).(signal)(4,:);
+        [subs]          = results_params.(results).(signal)(5,:);
+        plot(subs,est_bdry_quant,[color_vec(j) '-' 'x'],'linewidth', 1.5);
+        plot(subs,true_bdry_quant,[color_vec(j) '--' 'x'],'linewidth', 1.5);
+    end 
+    % set the range for the axis
+    xlim([subs(1)-5, subs(end)+5])
+    % ylim([0.5 1]);
+    % specify tiks
+    xticks(subs)
+    % put label onto the axis
+    xlabel('Sample Size [N]');
+    ylabel('Quantile Value');
+    
+    titlename = sprintf('%d%% Quantile Results', results_params.(results).nominal_level);
+    title(titlename);
+    
+    set(gca, 'fontsize', 14);
+    axis square;
+    hold off
+    
+    if i == length(nominal_vec)
+        % create legend
+        lgd = legend('Sig. 1, Std Dev. 1 (est. boundary)', ...
+                     'Sig. 1, Std Dev. 1 (true boundary)', ...
+                     'Sig. 1, Std Dev. 2 (est. boundary)', ...
+                     'Sig. 1, Std Dev. 2 (true boundary)');
+    end   
+        
+end
+
+lgd_plot = subplot(2,3,5);
+axis square;
+pos_lgd  = get(lgd_plot,'position');
+lgd.FontWeight = 'bold';
+set(lgd,'position', [pos_lgd(1), pos_lgd(2) + 0.25, pos_lgd(3), pos_lgd(4) - 0.2]);
+axis(lgd_plot,'off');
+
+set(gcf,'position', [-21,120,1195,682]);
+fh = gcf;
+set(fh,'color','w');
+export_fig(fh,fullfile(results_mat_dir,'Sig_1_quantile_results.pdf'))
+
+figure, clf
+for i = 1:length(nominal_vec)
+    subplot(2,3,i);
+    hold on
+    results = nominal_vec(i);
+    
+    for j = 3:4
+        signal = signal_vec(j);
+        [true_bdry_quant] = results_params.(results).(signal)(3,:);
+        [est_bdry_quant]  = results_params.(results).(signal)(4,:);
+        [subs]          = results_params.(results).(signal)(5,:);
+        plot(subs,est_bdry_quant,[color_vec(j) '-' 'x'],'linewidth', 1.5);
+        plot(subs,true_bdry_quant,[color_vec(j) '--' 'x'],'linewidth', 1.5);
+    end 
+    % set the range for the axis
+    xlim([subs(1)-5, subs(end)+5])
+    % ylim([0.5 1]);
+    % specify tiks
+    xticks(subs)
+    % put label onto the axis
+    xlabel('Sample Size [N]');
+    ylabel('Quantile Value');
+    
+    titlename = sprintf('%d%% Quantile Results', results_params.(results).nominal_level);
+    title(titlename);
+    
+    set(gca, 'fontsize', 14);
+    axis square;
+    hold off
+    
+    if i == length(nominal_vec)
+        % create legend
+        lgd = legend('Sig. 1, Std Dev. 1 (est. boundary)', ...
+                     'Sig. 1, Std Dev. 1 (true boundary)', ...
+                     'Sig. 1, Std Dev. 2 (est. boundary)', ...
+                     'Sig. 1, Std Dev. 2 (true boundary)');
+    end   
+        
+end
+
+lgd_plot = subplot(2,3,5);
+axis square;
+pos_lgd  = get(lgd_plot,'position');
+lgd.FontWeight = 'bold';
+set(lgd,'position', [pos_lgd(1), pos_lgd(2) + 0.25, pos_lgd(3), pos_lgd(4) - 0.2]);
+axis(lgd_plot,'off');
+
+set(gcf,'position', [-21,120,1195,682]);
+fh = gcf;
+set(fh,'color','w');
+export_fig(fh,fullfile(results_mat_dir,'Sig_2_quantile_results.pdf'))
