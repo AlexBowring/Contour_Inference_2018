@@ -4,7 +4,7 @@ cd(String);
 [x,y,z] = ndgrid(-1:1);
 se = strel('arbitrary',sqrt(x.^2 + y.^2 + z.^2) <=1);
 
-thr   = 25.0;  % In raw change units, mu
+thr   = 10.0;  % In raw change units, mu
 nBoot = 5000;
 
 VY=spm_vol('smooth_copes.nii.gz');      % This is the file "handle" for all input
@@ -192,7 +192,11 @@ for k=1:nBoot
   % Estimated boundary
   observed_boundary_bootstrap       = observed_resid_boundary_values*spdiags(signflips, 0, nSubj, nSubj);
   observed_boundary_resid_field     = sum(observed_boundary_bootstrap, 2)/sqrt(nSubj); 
-  supG(k)                           = max(abs(observed_boundary_resid_field));
+  % Re-standardizing by bootstrap standard deviation
+  observed_boot_std                 = std(observed_boundary_bootstrap, 0, 2);
+  observed_boundary_resid_field     = observed_boundary_resid_field./observed_boot_std; 
+
+  supG(k)                  = max(abs(observed_boundary_resid_field));
   
   % cohens d boundary
   %cohen_d_boundary_bootstrap        = cohen_d_resid_boundary_values*spdiags(signflips, 0, nSubj, nSubj);
@@ -233,21 +237,21 @@ imagesc(UpperCon(:,:,40));axis image; colorbar
 
 cd(Out);
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'smooth_LowerConfidenceInterval_c2500.nii'; % crucially, change the file name!
+Vout.fname = 'smooth_LowerConfidenceInterval_c1000.nii'; % crucially, change the file name!
 Vout.descrip = 'Lower confidence interval!'; % Actually, put something more
                                         % informative here
 
 Vout=spm_write_vol(Vout,LowerCon);
 
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'smooth_MiddleConfidenceInterval_c2500.nii'; % crucially, change the file name!
+Vout.fname = 'smooth_MiddleConfidenceInterval_c1000.nii'; % crucially, change the file name!
 Vout.descrip = 'Middle confidence interval!'; % Actually, put something more
                                         % informative here
 
 Vout=spm_write_vol(Vout,MiddleCon);
 
 Vout=VY(1); % clone the first image's handle
-Vout.fname = 'smooth_UpperConfidenceInterval_c2500.nii'; % crucially, change the file name!
+Vout.fname = 'smooth_UpperConfidenceInterval_c1000.nii'; % crucially, change the file name!
 Vout.descrip = 'Upper confidence interval!'; % Actually, put something more
                                         % informative here
 
