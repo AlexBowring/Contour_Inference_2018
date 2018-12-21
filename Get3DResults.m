@@ -46,7 +46,6 @@ for i = 1:nominal_levels_dim(2)
  
     for j = 1:sim_results_mat_dim(1)
         for k = 1:sim_results_mat_dim(2)
-            k
             temp = load(char(sim_results_mat(j,k)));
             raw_result                          = sprintf('percentage_success_vector_raw_%d_alternate', nominal_levels(i));
             raw_mean_quantile_value             = sprintf('threshold_raw_%d_store', nominal_levels(i));
