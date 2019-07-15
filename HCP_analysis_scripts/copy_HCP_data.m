@@ -1,5 +1,5 @@
 HCP    ='/home/essicd/storage/data/HCP/Unrelated_80';
-Outdir ='/storage/maullz/Contour_Inference_2018/HCP_analysis_data';
+Outdir ='/storage/maullz/Contour_Inference_2018/HCP_analysis_data_test';
 
 if ~isdir(Outdir)
     mkdir(Outdir)
@@ -8,6 +8,7 @@ end
 % Cope files
 Copes     = dir([HCP '/*/WM/Level2/cope11.feat/cope1*']);
 Varcopes  = dir([HCP '/*/WM/Level2/cope11.feat/varcope1*']);
+Tstats    = dir([HCP '/*/WM/Level2/tstat11.nii.gz']);
 
 % Copying to Outdir
 for i=1:length(Copes)
@@ -38,3 +39,13 @@ system(char(command));
 
 command = ['fslmaths ' fullfile(Outdir,'group_mask.nii.gz') ' -Tmin ' fullfile(Outdir,'group_mask.nii.gz')];
 system(command); 
+
+% Unzipping the copes so the data can be analyzed in SPM
+for i=1:length(Copes)
+    dir_split = strsplit(Copes(i).folder,'/');
+    sub_id    = dir_split{7}; 
+    command   = ['gunzip ' fullfile(Outdir, ['smooth_cope_' sub_id '.nii.gz'])];
+    system(command);
+end 
+
+ 
