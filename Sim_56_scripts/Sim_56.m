@@ -33,11 +33,7 @@ rimFWHM = 2/sqrt(2*log(2));
 stdblk  = prod(dim([1 2])/2);
 thr     = 2;
 rad     = 30;
-NIFTI_dir = fullfile(pwd,SvNm);
 
-if ~isdir(NIFTI_dir)
-    mkdir(NIFTI_dir);
-end
 %-----------Initialization of Some Variables
 V           = prod(dim);   
 wdim        = dim + 2*ceil(rimFWHM*smo)*ones(1,3);  % Working image dimension
@@ -170,14 +166,6 @@ bshift_w2 = abs(Sig(bshift) - thr)./abs(Sig(bshift) - Sig(bshift(:,:,[dim(3) 1:d
 fshift_w1 = abs(Sig(fshift(:,:,[2:dim(3) 1])) - thr)./abs(Sig(fshift) - Sig(fshift(:,:,[2:dim(3) 1])));
 fshift_w2 = abs(Sig(fshift) - thr)./abs(Sig(fshift) - Sig(fshift(:,:,[2:dim(3) 1])));
 
-% Creating an empty NIFTI volume to overwrite with data
-x = struct('fname',fullfile(NIFTI_dir, 'empty.nii'),'dim',[dim],'dt',[64 0],'pinfo',double([1 1 1])','mat',eye(4),'n',[1 1],'descrip','NIFTI-1 Image');
-private = struct('dat',zeros(dim),'mat',x.mat,'mat_intent','Aligned','mat0',x.mat,'mat0_intent','Aligned','descrip',x.descrip);
-x.private = private;
-x = spm_create_vol(x);
-x = spm_write_vol(x, zeros(dim));
-V = spm_vol(fullfile(NIFTI_dir,'empty.nii'));
-
 for t=1:nRlz
     fprintf('.');
     observed_mean = zeros(dim);
@@ -201,13 +189,11 @@ for t=1:nRlz
         tNoises = Noises(trnind{1},trnind{2},trnind{3});       
         tImgs = Sig + tNoises; % Creates the true image of smoothed signal + smoothed noise
         
-        % Saving each subjects image as a NIFTI file
-        VtImgs = x;
-        VtImgs.fname = fullfile(NIFTI_dir, sprintf('sub_%03d_image.nii', i));
-        spm_write_vol(VtImgs, tImgs);
-        
         observed_mean = observed_mean + tImgs;
         observed_std  = observed_std + tImgs.^2;
+        
+        tImgs = reshape(tImgs, [prod(dim), 1]);      
+        resid(:,i) = tImgs; 
         
       end %========== Loop i (subjects)
       
@@ -272,11 +258,6 @@ for t=1:nRlz
       observed_fshift_w2 = abs(observed_mean(observed_fshift) - thr)./abs(observed_mean(observed_fshift) - observed_mean(observed_fshift(:,:,[2:dim(3) 1])));
       
       % Residuals
-      for i=1:nSubj
-          subject_image      = spm_vol(fullfile(NIFTI_dir, sprintf('sub_%03d_image.nii', i)));
-          subject_image_data = reshape(spm_read_vols(subject_image), [prod(dim) 1]);
-          resid(:,i)         = subject_image_data;
-      end
       resid = bsxfun(@minus,resid,reshape(observed_mean, [prod(dim) 1]));
       resid = spdiags(1./reshape(observed_std, [prod(dim) 1]), 0,prod(dim),prod(dim))*resid;
       
