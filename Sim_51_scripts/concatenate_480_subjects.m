@@ -1,18 +1,17 @@
 function ConcatenateSims
-Sim = 'Sim_38'; 
+Sim = 'Sim_51'; 
 Nfiles = 600; 
-Base = sprintf(['/storage/maullz/Contour_Inference_2018/', Sim, '_results/240_subjects']);
+Base = sprintf(['/storage/maullz/Contour_Inference_2018/', Sim, '_results/480_subjects']);
 
 cd(Base)
 
 a = dir([Sim,'_*.mat']);
 
 x = load(a(1).name);
-filename = sprintf([Sim,'_240_subjects.mat']);
+filename = sprintf([Sim,'_480_subjects.mat']);
 save(filename,'-struct','x');
 
 for j=2:Nfiles
-	j 
 	x = load(filename);
 	y = load(a(j).name);
 
@@ -21,12 +20,12 @@ for j=2:Nfiles
 	x.(vrs{2}) = x.(vrs{2}) + y.(vrs{2}); % Adding number of realizations
 
 	for k=9:38
-		x.(vrs{k}) = [x.(vrs{k}); y.(vrs{k})]; % Concatenating the other variables of interest
-    	end
+    x.(vrs{k}) = [x.(vrs{k}); y.(vrs{k})]; % Concatenating the other variables of interest
+    end
 
-    	for k=39:40
-    		x.(vrs{k}) = [x.(vrs{k}), y.(vrs{k})]; % Concatenates the SupGstore along the 2nd dimension instead of 1st dimension
-    	end
+    for k=39:40
+        x.(vrs{k}) = [x.(vrs{k}), y.(vrs{k})]; % Concatenates the SupGstore along the 2nd dimension instead of 1st dimension
+    end
 
 
 save(filename,'-struct','x');
