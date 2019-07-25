@@ -1,17 +1,17 @@
 function ConcatenateSims
 Sim = 'Sim_38'; 
 Nfiles = 600; 
-Base = sprintf(['/storage/maullz/Contour_Inference_2018/', Sim, '_results/240_subjects']);
+Base = sprintf(['/storage/maullz/Contour_Inference_2018/', Sim, '_results/480_subjects']);
 
 cd(Base)
 
 a = dir([Sim,'_*.mat']);
 
 x = load(a(1).name);
-filename = sprintf([Sim,'_240_subjects.mat']);
+filename = sprintf([Sim,'_480_subjects.mat']);
 save(filename,'-struct','x');
 
-for j=2:Nfiles 
+for j=2:Nfiles
 	x = load(filename);
 	y = load(a(j).name);
 
