@@ -8,6 +8,9 @@ nominal_vec = ["nom_80_results","nom_90_results","nom_95_results"];
 signal_vec  = ["ThreeD_sig_2_t_bootstrap_results","ThreeD_sig_2_old_bootstrap_results","TwoD_sig_2_t_bootstrap_results","TwoD_sig_2_old_bootstrap_results"];
 color_vec   = 'rbmg';
 
+set(groot, 'defaultAxesTickLabelInterpreter','latex');
+set(groot, 'defaultLegendInterpreter','latex');
+
 % Creating coverage plots for first signal model
 figure, clf
 for i = 1:length(nominal_vec)
@@ -35,23 +38,25 @@ for i = 1:length(nominal_vec)
     xticks(subs)
     % put label onto the axis
     xlabel('Sample Size [N]');
-    ylabel('emp. Covering Rate');
+    ylabel('Emp. Covering Rate');
     
-    titlename = sprintf('%d%% Nominal Coverage Results', results_params.(results).nominal_level);
+    titlename = sprintf('Large Sphere (%d%% Nom.)', results_params.(results).nominal_level);
     title(titlename);
     
-    set(gca, 'fontsize', 14);
+    set(gca, 'fontsize', 18);
     axis square;
     hold off
     
     if i == length(nominal_vec)
         % create legend
-        lgd = legend('t-bootstrap / BTSN simulation assessment', ...
-                     't-bootstrap / SSS simulation assessment', ...
-                     'wild bootstrap / BTSN simulation assessment', ...
-                     'wild bootstrap / SSS simulation assessment', ...
+        lgd = legend('Wild t-Bootstrap / BTSN simulation assessment', ...
+                     'Wild t-Bootstrap / SSS simulation assessment', ...
+                     'Gaussian Wild Bootstrap / BTSN simulation assessment', ...
+                     'Gaussian Wild Bootstrap / SSS simulation assessment', ...
                      'Nominal Coverage Level', ...
-                     '1.96 * Std Error');
+                     '\pm 1.96 \times Simulation Std. Error');
+                 
+        lgd.FontSize = 18;
     end   
         
 end
@@ -60,7 +65,8 @@ lgd_plot = subplot(2,3,5);
 axis square;
 pos_lgd  = get(lgd_plot,'position');
 lgd.FontWeight = 'bold';
-set(lgd,'position', [pos_lgd(1), pos_lgd(2) + 0.25, pos_lgd(3), pos_lgd(4) - 0.2]);
+set(lgd,'position', [pos_lgd(1), pos_lgd(2) + 0.2, pos_lgd(3), pos_lgd(4) - 0.2]);
+set(lgd, 'interpreter', 'tex');
 axis(lgd_plot,'off');
 
 set(gcf,'position', [-21,120,1195,682]);
@@ -95,23 +101,24 @@ for i = 1:length(nominal_vec)
     xticks(subs)
     % put label onto the axis
     xlabel('Sample Size [N]');
-    ylabel('emp. Covering Rate');
+    ylabel('Emp. Covering Rate');
     
-    titlename = sprintf('%d%% Nominal Coverage Results', results_params.(results).nominal_level);
+    titlename = sprintf('Circle (%d%% Nom.)', results_params.(results).nominal_level);
     title(titlename);
     
-    set(gca, 'fontsize', 14);
+    set(gca, 'fontsize', 18);
     axis square;
     hold off
     
     if i == length(nominal_vec)
         % create legend
-        lgd = legend('t-Bootstrap / BTSN Simulation Assessment', ...
-                     't-Bootstrap / SSS Simulation Assessment', ...
-                     'Wild Bootstrap / BTSN Simulation Assessment', ...
-                     'Wild Bootstrap / SSS Simulation Assessment', ...
+        lgd = legend('Wild t-Bootstrap / BTSN Simulation Assessment', ...
+                     'Wild t-Bootstrap / SSS Simulation Assessment', ...
+                     'Gaussian Wild Bootstrap / BTSN Simulation Assessment', ...
+                     'Gaussian Wild Bootstrap / SSS Simulation Assessment', ...
                      'Nominal Coverage Level', ...
-                     '1.96 * Std Error');
+                     '\pm 1.96 \times Simulation Std. Error');
+        lgd.FontSize = 18;
     end   
          
 end
@@ -120,7 +127,8 @@ lgd_plot = subplot(2,3,5);
 axis square;
 pos_lgd  = get(lgd_plot,'position');
 lgd.FontWeight = 'bold';
-set(lgd,'position', [pos_lgd(1), pos_lgd(2) + 0.25, pos_lgd(3), pos_lgd(4) - 0.2]);
+set(lgd,'position', [pos_lgd(1), pos_lgd(2) + 0.2, pos_lgd(3), pos_lgd(4) - 0.2]);
+set(lgd, 'interpreter', 'tex');
 axis(lgd_plot,'off');
 
 set(gcf,'position', [-21,120,1195,682]);
